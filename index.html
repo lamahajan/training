@@ -901,7 +901,7 @@ async function handleSubmit() {
     if (CONFIG.SHEET_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
       const res  = await fetch(CONFIG.SHEET_URL, {
         method: 'POST', mode: 'cors',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify(payload),
       });
       const data = await res.json();
