@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CBSE Training 2025 — Lotus International School</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #f5f3ff;
+  --surface:   #ffffff;
+  --purple-l:  #ede9fe;
+  --purple-m:  #c4b5fd;
+  --purple:    #7c3aed;
+  --purple-d:  #6d28d9;
+  --pink-l:    #fce7f3;
+  --blue-l:    #e0f2fe;
+  --green-l:   #dcfce7;
+  --green:     #16a34a;
+  --text:      #1e1b4b;
+  --sub:       #6b7280;
+  --border:    #e9e7f7;
+  --radius:    14px;
+  --shadow:    0 2px 16px rgba(124,58,237,0.07);
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ── PAGE WRAPPER ── */
+.page {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 48px 20px 80px;
+}
+
+/* ── TOP BADGE ── */
+.top-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--purple);
+  margin-bottom: 20px;
+}
+.top-badge .pip {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  background: var(--purple-l);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+}
+
+/* ── HERO BLOCK ── */
+.hero-block {
+  margin-bottom: 36px;
+}
+.hero-block h1 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(1.8rem, 4.5vw, 2.6rem);
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  margin-bottom: 10px;
+}
+.hero-block h1 span {
+  background: linear-gradient(135deg, var(--purple), #a855f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-block p {
+  font-size: 0.9rem;
+  color: var(--sub);
+  line-height: 1.7;
+  max-width: 500px;
+}
+
+/* ── PILLS ROW ── */
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 32px;
+}
+.pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.pill.purple { background: var(--purple-l); color: var(--purple-d); }
+.pill.pink   { background: var(--pink-l);   color: #9d174d; }
+.pill.blue   { background: var(--blue-l);   color: #0369a1; }
+.pill.green  { background: var(--green-l);  color: #15803d; }
+
+/* ── FEE BANNER ── */
+.fee-banner {
+  background: linear-gradient(135deg, #ede9fe 0%, #fce7f3 100%);
+  border: 1px solid #ddd6fe;
+  border-radius: var(--radius);
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+.fee-banner .fee-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--sub);
+  margin-bottom: 2px;
+}
+.fee-banner .fee-amount {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--purple);
+  line-height: 1;
+}
+.fee-banner .fee-note {
+  font-size: 0.75rem;
+  color: var(--sub);
+  margin-top: 3px;
+}
+.fee-banner .fee-includes {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.fee-includes span {
+  font-size: 0.78rem;
+  color: #5b21b6;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── CARD ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 32px;
+  margin-bottom: 16px;
+}
+
+/* ── SECTION LABEL ── */
+.section-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--purple);
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1.5px solid var(--purple-l);
+}
+
+/* ── FIELDS ── */
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+.field { margin-bottom: 16px; }
+.field:last-child { margin-bottom: 0; }
+
+.field label {
+  display: block;
+  font-size: 0.775rem;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.field label .req { color: #a855f7; margin-left: 2px; }
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  color: var(--text);
+  background: #faf9ff;
+  outline: none;
+  appearance: none;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+.field input::placeholder,
+.field textarea::placeholder { color: #bbb; }
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--purple-m);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(196,181,253,0.25);
+}
+.field select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23a0a0c0' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 13px center;
+  padding-right: 36px;
+  cursor: pointer;
+}
+.field textarea { resize: vertical; min-height: 72px; }
+
+/* ── CHECKBOX GROUP ── */
+.check-grid { display: flex; flex-direction: column; gap: 9px; margin-top: 2px; }
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  background: #faf9ff;
+}
+.check-item:has(input:checked) {
+  border-color: var(--purple-m);
+  background: var(--purple-l);
+}
+.check-item input[type="checkbox"] {
+  width: 16px; height: 16px;
+  border-radius: 4px;
+  accent-color: var(--purple);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.check-item span {
+  font-size: 0.83rem;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+/* ── PAYMENT SECTION ── */
+.payment-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 4px;
+}
+.pay-option {
+  padding: 14px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  background: #faf9ff;
+  transition: border-color 0.15s, background 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.pay-option:has(input:checked) {
+  border-color: var(--purple-m);
+  background: var(--purple-l);
+}
+.pay-option input[type="radio"] {
+  accent-color: var(--purple);
+  flex-shrink: 0;
+}
+.pay-option .pay-name {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text);
+}
+.pay-option .pay-sub {
+  font-size: 0.72rem;
+  color: var(--sub);
+  margin-top: 1px;
+}
+
+/* ── UPI DETAILS BOX ── */
+.upi-box {
+  display: none;
+  margin-top: 14px;
+  background: var(--purple-l);
+  border: 1px dashed var(--purple-m);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.upi-box.show { display: block; }
+.upi-box .upi-id {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--purple);
+  letter-spacing: 0.03em;
+}
+.upi-box p {
+  font-size: 0.78rem;
+  color: var(--sub);
+  margin-top: 5px;
+  line-height: 1.5;
+}
+
+/* ── SUBMIT BUTTON ── */
+.submit-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--purple);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+  margin-top: 24px;
+  box-shadow: 0 4px 14px rgba(124,58,237,0.25);
+}
+.submit-btn:hover {
+  background: var(--purple-d);
+  box-shadow: 0 6px 18px rgba(124,58,237,0.32);
+}
+.submit-btn:active { transform: scale(0.99); }
+.submit-btn:disabled {
+  background: #c4b5fd;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.form-note {
+  text-align: center;
+  font-size: 0.73rem;
+  color: var(--sub);
+  margin-top: 12px;
+  line-height: 1.5;
+}
+
+/* ── ERROR ── */
+.error-msg {
+  display: none;
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.8rem;
+  color: #be123c;
+  margin-top: 14px;
+}
+.error-msg.show { display: block; }
+
+/* ── SUCCESS ── */
+.success-screen {
+  display: none;
+  text-align: center;
+  padding: 48px 24px;
+}
+.success-screen.show { display: block; }
+.success-icon {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: var(--green-l);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px;
+  margin: 0 auto 20px;
+}
+.success-screen h2 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.success-screen p {
+  font-size: 0.875rem;
+  color: var(--sub);
+  line-height: 1.7;
+  max-width: 380px;
+  margin: 0 auto 20px;
+}
+.ref-chip {
+  display: inline-block;
+  background: var(--purple-l);
+  border: 1px solid var(--purple-m);
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--purple);
+  letter-spacing: 0.06em;
+}
+
+/* ── FOOTER ── */
+.footer {
+  text-align: center;
+  font-size: 0.73rem;
+  color: #a0a0c0;
+  margin-top: 40px;
+  line-height: 1.7;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 560px) {
+  .row { grid-template-columns: 1fr; }
+  .payment-options { grid-template-columns: 1fr; }
+  .card { padding: 22px 18px; }
+  .fee-banner { flex-direction: column; align-items: flex-start; }
+}
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- BADGE -->
+  <div class="top-badge">
+    <div class="pip">🪷</div>
+    Lotus International School · Ludhiana
+  </div>
+
+  <!-- HERO -->
+  <div class="hero-block">
+    <h1>CBSE Teacher<br><span>Training Programme</span></h1>
+    <p>A two-day capacity-building workshop for CBSE educators — covering competency-based learning, NEP 2020, and modern classroom tools.</p>
+  </div>
+
+  <!-- PILLS -->
+  <div class="pills">
+    <div class="pill purple">📅 July 19–20, 2025</div>
+    <div class="pill blue">🕘 9 AM – 5 PM both days</div>
+    <div class="pill pink">📍 Lotus International School</div>
+    <div class="pill green">🎓 CBSE Certificate issued</div>
+  </div>
+
+  <!-- FEE BANNER -->
+  <div class="fee-banner">
+    <div>
+      <div class="fee-label">Registration Fee</div>
+      <div class="fee-amount">₹1,200</div>
+      <div class="fee-note">per participant · inclusive of all taxes</div>
+    </div>
+    <div class="fee-includes">
+      <span>✦ Both day sessions included</span>
+      <span>✦ Meals & refreshments</span>
+      <span>✦ Training materials kit</span>
+      <span>✦ CBSE participation certificate</span>
+    </div>
+  </div>
+
+  <!-- FORM CARD -->
+  <div class="card" id="formCard">
+    <div id="formContent">
+
+      <!-- Personal -->
+      <div class="section-label">Personal Information</div>
+      <div class="row">
+        <div class="field">
+          <label>First Name <span class="req">*</span></label>
+          <input type="text" id="firstName" placeholder="Priya">
+        </div>
+        <div class="field">
+          <label>Last Name <span class="req">*</span></label>
+          <input type="text" id="lastName" placeholder="Sharma">
+        </div>
+      </div>
+      <div class="field">
+        <label>Email Address <span class="req">*</span></label>
+        <input type="email" id="email" placeholder="priya@school.edu.in">
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>Mobile Number <span class="req">*</span></label>
+          <input type="tel" id="phone" placeholder="98765 43210">
+        </div>
+        <div class="field">
+          <label>City</label>
+          <input type="text" id="city" placeholder="Ludhiana">
+        </div>
+      </div>
+
+      <!-- Professional -->
+      <div class="section-label" style="margin-top:28px;">Professional Details</div>
+      <div class="field">
+        <label>School / Institution <span class="req">*</span></label>
+        <input type="text" id="school" placeholder="St. Xavier's School, Amritsar">
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>Designation <span class="req">*</span></label>
+          <select id="designation">
+            <option value="" disabled selected>Select role</option>
+            <option>PGT</option>
+            <option>TGT</option>
+            <option>PRT</option>
+            <option>Department Head</option>
+            <option>Vice Principal</option>
+            <option>Principal</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Experience</label>
+          <select id="experience">
+            <option value="" disabled selected>Years teaching</option>
+            <option>0–2 years</option>
+            <option>3–5 years</option>
+            <option>6–10 years</option>
+            <option>11–20 years</option>
+            <option>20+ years</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>Subject(s) Taught <span class="req">*</span></label>
+          <input type="text" id="subjects" placeholder="Maths, Science">
+        </div>
+        <div class="field">
+          <label>Classes Handled</label>
+          <input type="text" id="grades" placeholder="VI – X">
+        </div>
+      </div>
+
+      <!-- Sessions -->
+      <div class="section-label" style="margin-top:28px;">Session Preferences <span style="font-weight:400;color:#a0a0c0;text-transform:none;letter-spacing:0;font-size:10px;">(select all that apply)</span></div>
+      <div class="check-grid" id="sessionPrefs">
+        <label class="check-item"><input type="checkbox" value="cbl"><span>Competency-Based Learning & Assessment</span></label>
+        <label class="check-item"><input type="checkbox" value="nep"><span>NEP 2020 Implementation in the Classroom</span></label>
+        <label class="check-item"><input type="checkbox" value="digital"><span>Digital Tools & EdTech Integration</span></label>
+        <label class="check-item"><input type="checkbox" value="inclusion"><span>Inclusive Education & Differentiated Instruction</span></label>
+        <label class="check-item"><input type="checkbox" value="assessment"><span>Formative & Summative Assessment Design</span></label>
+      </div>
+
+      <!-- Payment -->
+      <div class="section-label" style="margin-top:28px;">Payment Method <span style="font-weight:400;color:#a0a0c0;text-transform:none;letter-spacing:0;font-size:10px;">(fee: ₹1,200)</span></div>
+      <div class="payment-options">
+        <label class="pay-option">
+          <input type="radio" name="payMethod" value="UPI" onchange="toggleUPI()">
+          <div>
+            <div class="pay-name">📱 UPI / QR</div>
+            <div class="pay-sub">GPay, PhonePe, Paytm</div>
+          </div>
+        </label>
+        <label class="pay-option">
+          <input type="radio" name="payMethod" value="Bank Transfer" onchange="toggleUPI()">
+          <div>
+            <div class="pay-name">🏦 Bank Transfer</div>
+            <div class="pay-sub">NEFT / IMPS</div>
+          </div>
+        </label>
+        <label class="pay-option">
+          <input type="radio" name="payMethod" value="Cash at School" onchange="toggleUPI()">
+          <div>
+            <div class="pay-name">💵 Cash at School</div>
+            <div class="pay-sub">Pay on arrival</div>
+          </div>
+        </label>
+        <label class="pay-option">
+          <input type="radio" name="payMethod" value="DD / Cheque" onchange="toggleUPI()">
+          <div>
+            <div class="pay-name">📄 DD / Cheque</div>
+            <div class="pay-sub">In favour of Lotus Int. School</div>
+          </div>
+        </label>
+      </div>
+
+      <!-- UPI details -->
+      <div class="upi-box" id="upiBox">
+        <div class="upi-id">school@upi &nbsp;·&nbsp; 98765-XXXXX</div>
+        <p>Pay ₹1,200 and note your transaction ID. Enter it below after payment so we can verify.</p>
+        <div class="field" style="margin-top:10px;">
+          <label>Transaction / UTR ID <span class="req">*</span></label>
+          <input type="text" id="txnId" placeholder="e.g. 412345678901">
+        </div>
+      </div>
+
+      <div class="field" style="margin-top:16px;">
+        <label>Dietary Preference (for lunch)</label>
+        <select id="diet">
+          <option value="" disabled selected>Select</option>
+          <option>Vegetarian</option>
+          <option>Non-Vegetarian</option>
+          <option>Jain</option>
+          <option>Vegan</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Anything else we should know?</label>
+        <textarea id="notes" placeholder="Special requirements, accessibility needs, etc."></textarea>
+      </div>
+
+      <div class="error-msg" id="errorMsg"></div>
+
+      <button class="submit-btn" id="submitBtn" onclick="handleSubmit()">Submit Registration</button>
+      <p class="form-note">Seats are limited to 60 participants · Confirmation within 24 hrs · Closes July 10</p>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="success-screen" id="successScreen">
+      <div class="success-icon">✓</div>
+      <h2>You're registered!</h2>
+      <p>Thank you. We've recorded your details. A confirmation will reach your email within 24 hours with the full schedule and venue map.</p>
+      <div class="ref-chip" id="refNo"></div>
+      <p style="margin-top:12px; font-size:0.73rem;">Save this reference number</p>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    🪷 Lotus International School · Ludhiana, Punjab<br>
+    training@lotusinternational.edu.in · +91 161 234 5678<br>
+    <span style="color:#c4b5fd;">CBSE Training Programme 2025</span>
+  </div>
+
+</div>
+
+<script>
+  // ── CONFIG ── Replace with your deployed Google Apps Script URL
+  const SHEET_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
+
+  function toggleUPI() {
+    const val = document.querySelector('input[name="payMethod"]:checked')?.value;
+    const box = document.getElementById('upiBox');
+    box.classList.toggle('show', val === 'UPI' || val === 'Bank Transfer');
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('errorMsg');
+    el.textContent = msg;
+    el.classList.add('show');
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function clearError() {
+    document.getElementById('errorMsg').classList.remove('show');
+  }
+
+  function genRef() {
+    return 'LIS-' + Date.now().toString(36).toUpperCase().slice(-5) +
+           '-' + Math.random().toString(36).substring(2,5).toUpperCase();
+  }
+
+  async function handleSubmit() {
+    clearError();
+
+    const get = id => document.getElementById(id)?.value?.trim() || '';
+    const firstName  = get('firstName');
+    const lastName   = get('lastName');
+    const email      = get('email');
+    const phone      = get('phone');
+    const school     = get('school');
+    const designation= get('designation');
+    const subjects   = get('subjects');
+    const payMethod  = document.querySelector('input[name="payMethod"]:checked')?.value || '';
+    const sessions   = [...document.querySelectorAll('#sessionPrefs input:checked')].map(c => c.value).join(', ');
+    const txnId      = get('txnId');
+
+    if (!firstName)  return showError('First name is required.');
+    if (!lastName)   return showError('Last name is required.');
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+                     return showError('Please enter a valid email address.');
+    if (!phone || phone.replace(/\D/g,'').length < 10)
+                     return showError('Enter a valid 10-digit mobile number.');
+    if (!school)     return showError('School / institution name is required.');
+    if (!designation)return showError('Please select your designation.');
+    if (!subjects)   return showError('Please enter the subjects you teach.');
+    if (!payMethod)  return showError('Please select a payment method.');
+    if ((payMethod === 'UPI' || payMethod === 'Bank Transfer') && !txnId)
+                     return showError('Please enter your transaction / UTR ID.');
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Submitting…';
+
+    const refNo = genRef();
+    const timestamp = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+
+    const payload = {
+      Timestamp: timestamp,
+      'Reference No': refNo,
+      'First Name': firstName,
+      'Last Name': lastName,
+      Email: email,
+      Phone: phone,
+      City: get('city'),
+      School: school,
+      Designation: designation,
+      Experience: get('experience'),
+      Subjects: subjects,
+      Grades: get('grades'),
+      Sessions: sessions,
+      'Payment Method': payMethod,
+      'Transaction ID': txnId,
+      Diet: get('diet'),
+      Notes: get('notes'),
+      'Payment Status': 'Pending Verification',
+    };
+
+    try {
+      if (SHEET_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+        // Demo mode — no real sheet connected
+        console.log('Demo mode – payload:', payload);
+        await new Promise(r => setTimeout(r, 800));
+      } else {
+        await fetch(SHEET_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+      }
+      document.getElementById('refNo').textContent = refNo;
+      document.getElementById('formContent').style.display = 'none';
+      document.getElementById('successScreen').classList.add('show');
+    } catch (err) {
+      showError('Something went wrong. Please try again or contact us directly.');
+      btn.disabled = false;
+      btn.textContent = 'Submit Registration';
+    }
+  }
+</script>
+</body>
+</html>
