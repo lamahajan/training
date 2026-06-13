@@ -873,7 +873,7 @@ async function handleSubmit() {
   if (!school)      return showErr('School or institution name is required.');
   if (!designation) return showErr('Please select your designation.');
   if (!subjects)    return showErr('Please enter the subject(s) you teach.');
-  if (!photoBase64) return showErr('Please upload a passport photo.');
+
   if (seatsAvailable <= 0) return showErr('Sorry, all seats are full.');
 
   const btn = document.getElementById('submitBtn');
