@@ -896,16 +896,13 @@ async function handleSubmit() {
 
   try {
     if (CONFIG.SHEET_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
-      const res  = await fetch(CONFIG.SHEET_URL, {
-        method: 'POST', mode: 'cors',
-        headers: { 'Content-Type': 'application/json' },
+      // Apps Script doesn't support CORS on POST — use no-cors (opaque response)
+      // Fire-and-forget; Apps Script background trigger handles QR + WhatsApp
+      await fetch(CONFIG.SHEET_URL, {
+        method: 'POST', mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify(payload),
       });
-      const data = await res.json();
-      if (!data.ok) {
-        if (data.error === 'FULL') { lockForm(); return showErr('All seats have just been filled.'); }
-        throw new Error(data.error);
-      }
     }
 
     // Build WhatsApp chat link — opens WhatsApp with pre-filled message
