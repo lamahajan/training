@@ -14,17 +14,17 @@ const CONFIG = {
   SCHOOL_NAME      : 'Lotus International School',
   SCHOOL_LOCATION  : 'Dinanagar, Punjab',
   SCHOOL_WA_NUMBER : '919872760880',         // WhatsApp number with country code, no +
-  TRAINING_NAME    : 'CBSE Teacher Training Programme 2026',
-  TRAINING_SHORT   : 'CBSE Training 2026',
+  TRAINING_NAME    : 'CBSE Teacher Training Programme 2025',
+  TRAINING_SHORT   : 'CBSE Training 2025',
   HERO_EYEBROW     : 'CBSE Certified Programme',
   HERO_TITLE_LINE1 : 'Teacher Training',
-  HERO_TITLE_LINE2 : 'Programme 2026',
+  HERO_TITLE_LINE2 : 'Programme 2025',
   HERO_SUBTITLE    : 'A full-day workshop for CBSE educators. Build modern classroom competencies and earn your official participation certificate.',
-  EVENT_DATE       : 'July 12, 2026',
+  EVENT_DATE       : 'July 19, 2025',
   EVENT_TIME       : '9:00 AM – 5:00 PM',
   EVENT_VENUE      : 'Lotus International School, Dinanagar',
   REG_DEADLINE     : 'July 10',
-  FEE_AMOUNT       : '750',
+  FEE_AMOUNT       : '1,200',
   FEE_CURRENCY     : '₹',
   FEE_DESC         : 'per participant · all-inclusive',
   FEE_INCLUDES     : [
@@ -119,8 +119,8 @@ nav {
   background: var(--blue); opacity: 0.5;
 }
 .hero h1 {
-  font-size: clamp(40px, 6.5vw, 68px);
-  font-weight: 700; letter-spacing: -0.045em; line-height: 1.02;
+  font-size: clamp(28px, 5.5vw, 60px);
+  font-weight: 700; letter-spacing: -0.03em; line-height: 1.08;
   color: var(--t1); margin-bottom: 20px;
 }
 .hero h1 em {
@@ -376,14 +376,7 @@ nav {
 .btn-submit:hover { background: var(--blue-d); box-shadow: 0 6px 28px rgba(0,113,227,0.38); }
 .btn-submit:active { transform: scale(0.995); }
 .btn-submit:disabled { background: var(--t3); cursor: not-allowed; transform: none; box-shadow: none; }
-.wa-info-box {
-  display: flex; align-items: center; justify-content: center; gap: 9px;
-  margin-top: 18px; padding: 14px 18px;
-  background: rgba(37,211,102,0.07);
-  border: 1px solid rgba(37,211,102,0.2);
-  border-radius: 14px;
-  font-size: 14px; color: var(--t2); line-height: 1.5;
-}
+
 .btn-wa-proceed {
   display: inline-flex; align-items: center; justify-content: center; gap: 10px;
   width: 100%; padding: 16px 24px; margin-top: 20px;
@@ -482,6 +475,9 @@ footer {
 
 /* ── RESPONSIVE ── */
 @media (max-width: 600px) {
+  .hero { padding: 60px 20px 52px; }
+  .hero h1 { font-size: clamp(26px, 8vw, 38px); letter-spacing: -0.02em; }
+
   nav { padding: 0 18px; }
   .nav-school { display: none; }
   .hero { padding: 64px 20px 52px; }
@@ -679,10 +675,7 @@ footer {
         <h2>Successfully Registered!</h2>
         <p>Your details have been saved. Check your WhatsApp — we've sent you a payment link to complete your seat booking.</p>
         <div class="ref-tag" id="refNo"></div>
-        <div class="wa-info-box">
-          <svg viewBox="0 0 24 24" fill="#25d366" width="20" height="20"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.125.558 4.12 1.533 5.849L.057 23.617a.75.75 0 00.92.92l5.874-1.522A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.693-.503-5.24-1.383l-.374-.219-3.876 1.004 1.035-3.782-.234-.386A9.957 9.957 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
-          <span id="waSentNote">A payment link will be sent to your WhatsApp. Your seat will be confirmed after payment.</span>
-        </div>
+
       </div>
     </div>
   </div>
@@ -732,6 +725,17 @@ let seatsAvailable = CONFIG.TOTAL_SEATS;
 
 async function checkSeats() {
   const banner = document.getElementById('seatBanner');
+
+  // ── Deadline check — lock form if past REG_DEADLINE ──
+  if (CONFIG.REG_DEADLINE) {
+    const deadline = new Date(CONFIG.REG_DEADLINE + ', 2025 23:59:59');
+    if (!isNaN(deadline) && new Date() > deadline) {
+      banner.innerHTML = `<div class="full-banner"><h3>Registration Closed</h3><p>The registration deadline was ${CONFIG.REG_DEADLINE}. Please contact the school for further assistance.</p></div>`;
+      document.getElementById('formView').style.display = 'none';
+      return;
+    }
+  }
+
   try {
     if (CONFIG.SHEET_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
       renderSeatBar(banner, CONFIG.TOTAL_SEATS, CONFIG.TOTAL_SEATS); return;
@@ -740,7 +744,9 @@ async function checkSeats() {
     const data = await res.json();
     seatsAvailable = data.available ?? CONFIG.TOTAL_SEATS;
     renderSeatBar(banner, seatsAvailable, CONFIG.TOTAL_SEATS);
-    if (seatsAvailable <= 0) lockForm();
+    if (seatsAvailable <= 0) {
+      document.getElementById('formView').style.display = 'none';
+    }
   } catch (e) { console.warn('Seat check failed.'); }
 }
 
@@ -760,11 +766,11 @@ function renderSeatBar(banner, available, total) {
     </div>`;
 }
 
-function lockForm() {
+function lockForm(label) {
   /* Disable submit button */
   const btn = document.getElementById('submitBtn');
   btn.disabled = true;
-  btn.textContent = 'Registration Closed — Seats Full';
+  btn.textContent = label || 'Registration Closed';
   btn.style.background = '#aeaeb2';
   btn.style.cursor = 'not-allowed';
 
@@ -816,7 +822,8 @@ function clearErr() { document.getElementById('errMsg').classList.remove('show')
 function cleanPhone(p) { return String(p).replace(/\D/g,'').slice(-10); }
 
 function genRef() {
-  return `${SERVER_CONFIG.refPrefix}-` + Date.now().toString(36).toUpperCase().slice(-5)
+  return SERVER_CONFIG.refPrefix + '/'
+       + Date.now().toString(36).toUpperCase().slice(-5)
        + Math.random().toString(36).substring(2,4).toUpperCase();
 }
 
@@ -916,7 +923,6 @@ async function handleSubmit() {
 
     // Registration saved — WhatsApp message sent by Apps Script background job
     document.getElementById('refNo').textContent      = currentRef;
-    document.getElementById('waSentNote').textContent = `A payment link will be sent to +91 ${cleanPhone(phone)}. Your seat will be confirmed after payment.`;
     document.getElementById('formView').style.display = 'none';
     document.getElementById('registeredView').classList.add('show');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -946,7 +952,6 @@ function showSuccess(refNo, name, phone) {
   document.getElementById('payingView').style.display = 'none';
   document.getElementById('successView').classList.add('show');
   document.getElementById('refNo').textContent = refNo;
-  document.getElementById('waSentNote').textContent = `Confirmation sent to ${phone} via WhatsApp.`;
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
