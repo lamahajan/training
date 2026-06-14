@@ -35,7 +35,7 @@ const CONFIG = {
   TOTAL_SEATS      : 50,
   SEATS_WARNING_AT : 10,
   // ↓ Only this is needed — Apps Script deployed URL (safe to expose)
-  SHEET_URL        : 'https://script.google.com/macros/s/AKfycbzfw1dd2ujr5h5fbNuGRpFkbV1o4i64o7jmjqjsYEs5n3V9RsKiU6VQeMwP6PYmSALcQw/exec',
+  SHEET_URL        : 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE',
 };
 
 // Populated at runtime from Apps Script /config endpoint
@@ -728,7 +728,7 @@ async function checkSeats() {
 
   // ── Deadline check — lock form if past REG_DEADLINE ──
   if (CONFIG.REG_DEADLINE) {
-    const deadline = new Date(CONFIG.REG_DEADLINE + ', 2025 23:59:59');
+    const deadline = new Date('2025-07-10T23:59:59');
     if (!isNaN(deadline) && new Date() > deadline) {
       banner.innerHTML = `<div class="full-banner"><h3>Registration Closed</h3><p>The registration deadline was ${CONFIG.REG_DEADLINE}. Please contact the school for further assistance.</p></div>`;
       document.getElementById('formView').style.display = 'none';
@@ -822,7 +822,7 @@ function clearErr() { document.getElementById('errMsg').classList.remove('show')
 function cleanPhone(p) { return String(p).replace(/\D/g,'').slice(-10); }
 
 function genRef() {
-  return SERVER_CONFIG.refPrefix + '/'
+  return SERVER_CONFIG.refPrefix + '-'
        + Date.now().toString(36).toUpperCase().slice(-5)
        + Math.random().toString(36).substring(2,4).toUpperCase();
 }
