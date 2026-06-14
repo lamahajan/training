@@ -984,11 +984,13 @@ async function loadServerConfig() {
     SERVER_CONFIG.upiId      = data.upiId      || '';
     SERVER_CONFIG.feeAppBase = data.feeAppBase  || '';
     SERVER_CONFIG.refPrefix  = data.refPrefix   || '';
+    if (data.totalSeats)      CONFIG.TOTAL_SEATS      = data.totalSeats;
+    if (data.seatsWarningAt)  CONFIG.SEATS_WARNING_AT = data.seatsWarningAt;
   } catch(e) { console.warn('Could not load server config:', e); }
 }
 
-checkSeats();
-loadServerConfig();
+// Config pehle load karo, phir seats check karo — warna purani hardcoded values use hongi
+loadServerConfig().then(() => checkSeats());
 
 /* ── Countdown Timer ── */
 (function startCountdown() {
