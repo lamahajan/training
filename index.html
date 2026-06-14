@@ -759,7 +759,7 @@ async function checkSeats() {
   }
 
   try {
-    if (CONFIG.SHEET_URL === 'https://script.google.com/macros/s/AKfycbzfw1dd2ujr5h5fbNuGRpFkbV1o4i64o7jmjqjsYEs5n3V9RsKiU6VQeMwP6PYmSALcQw/exec') {
+    if (CONFIG.SHEET_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
       renderSeatBar(banner, CONFIG.TOTAL_SEATS, CONFIG.TOTAL_SEATS); return;
     }
     const res  = await fetch(CONFIG.SHEET_URL);
@@ -933,7 +933,7 @@ async function handleSubmit() {
   };
 
   // sendBeacon — guaranteed delivery even if user closes screen immediately
-  if (CONFIG.SHEET_URL !== 'https://script.google.com/macros/s/AKfycbzfw1dd2ujr5h5fbNuGRpFkbV1o4i64o7jmjqjsYEs5n3V9RsKiU6VQeMwP6PYmSALcQw/exec') {
+  if (CONFIG.SHEET_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
     const blob = new Blob([JSON.stringify(payload)], { type: 'text/plain' });
     const sent = navigator.sendBeacon(CONFIG.SHEET_URL, blob);
     // Fallback to fetch if sendBeacon not supported
@@ -955,7 +955,7 @@ async function handleSubmit() {
 
 /* ── Poll ── */
 function startPolling(refNo, name, phone) {
-  if (CONFIG.SHEET_URL === 'https://script.google.com/macros/s/AKfycbzfw1dd2ujr5h5fbNuGRpFkbV1o4i64o7jmjqjsYEs5n3V9RsKiU6VQeMwP6PYmSALcQw/exec') return;
+  if (CONFIG.SHEET_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') return;
   let attempts = 0;
   const interval = setInterval(async () => {
     if (++attempts > 60) { clearInterval(interval); return; }
@@ -977,7 +977,7 @@ function showSuccess(refNo, name, phone) {
 
 /* ── Load server config (UPI ID, feeAppBase, refPrefix) ── */
 async function loadServerConfig() {
-  if (CONFIG.SHEET_URL === 'https://script.google.com/macros/s/AKfycbzfw1dd2ujr5h5fbNuGRpFkbV1o4i64o7jmjqjsYEs5n3V9RsKiU6VQeMwP6PYmSALcQw/exec') return;
+  if (CONFIG.SHEET_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') return;
   try {
     const res  = await fetch(`${CONFIG.SHEET_URL}?action=config`);
     const data = await res.json();
@@ -1010,6 +1010,8 @@ loadServerConfig();
     document.getElementById('cdH').textContent = String(h).padStart(2,'0');
     document.getElementById('cdM').textContent = String(m).padStart(2,'0');
     document.getElementById('cdS').textContent = String(s).padStart(2,'0');
+    const color = diff < 86400000 ? '#ff3b30' : diff < 259200000 ? '#ff9f0a' : '#34c759';
+    ['cdD','cdH','cdM','cdS'].forEach(id => { document.getElementById(id).style.color = color; });
   }
   tick();
   setInterval(tick, 1000);
@@ -1019,7 +1021,7 @@ loadServerConfig();
 (async function checkRefOnLoad() {
   const params = new URLSearchParams(window.location.search);
   const ref = params.get('ref');
-  if (!ref || CONFIG.SHEET_URL === 'https://script.google.com/macros/s/AKfycbzfw1dd2ujr5h5fbNuGRpFkbV1o4i64o7jmjqjsYEs5n3V9RsKiU6VQeMwP6PYmSALcQw/exec') return;
+  if (!ref || CONFIG.SHEET_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') return;
 
   // Hide form immediately, show payment screen as loading state
   document.getElementById('formView').style.display = 'none';
