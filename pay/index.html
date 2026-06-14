@@ -1,6 +1,196 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+// ╬═════════════════════════════════════════════╬
+// ║         CONFIG — sirf yeh block edit karo        ║
+// ╬═════════════════════════════════════════════╬
+var SHEET_URL   = 'https://script.google.com/macros/s/AKfycbzfw1dd2ujr5h5fbNuGRpFkbV1o4i64o7jmjqjsYEs5n3V9RsKiU6VQeMwP6PYmSALcQw/exec';
+var UPI_ID      = 'lisdnn@icici';       // overridden by Apps Script config
+var SCHOOL_NAME = 'LOTUS INTERNATIONAL SCHOOL';
+var SCHOOL_SUB  = 'ALIKHAN DINANAGAR';
+var PROGRAMME   = 'CBSE Training 2025';
+var PHONE       = '+919872760880';
+var WA_NUMBER   = '919872760880';
+// ╬═════════════════════════════════════════════╬
+
+(function(){
+
+  // ── 1. Parse ref + amount from path OR query params ──
+  var adm = '', am = '', name = '', cls = '';
+
+  // Hash-based: training.lisdnn.org/pay/#LIS-TRG-26-XXXXX/1200 (GitHub Pages compatible)
+  var hashMatch = window.location.hash.replace("#","").match(/^([^/]+)\/(\d+)/);
+  var pathMatch = window.location.pathname.match(/\/pay\/([^\/]+)\/([\d]+)/);
+
+  if(hashMatch){
+    adm = hashMatch[1].trim();
+    am  = hashMatch[2].trim();
+  } else if(pathMatch){
+    adm = pathMatch[1].trim();
+    am  = pathMatch[2].trim();
+  } else {
+    var p = new URLSearchParams(window.location.search);
+    adm   = (p.get("adm")   ||"").trim();
+    am    = (p.get("am")    ||"").trim();
+    name  = (p.get("name")  ||"").trim();
+    cls   = (p.get("class") ||"").trim();
+  }
+
+  if(!adm || !am || isNaN(parseFloat(am))){
+    showState('error'); return;
+  }
+
+  var amtFormatted = '₹' + parseFloat(am).toLocaleString('en-IN');
+
+  // ── 2. Fetch name + status from Apps Script ──
+  function initPage(fetchedName, status){
+    name = fetchedName || name || '';
+    cls  = cls || PROGRAMME;
+
+    // Fill info box
+    document.getElementById('disp-name').textContent  = name || '—';
+    document.getElementById('disp-adm').textContent   = adm;
+    document.getElementById('disp-class').textContent = cls;
+    document.getElementById('disp-am').textContent    = amtFormatted;
+    var initials = name
+      ? name.trim().split(' ').map(function(w){return w[0]||'';}).slice(0,2).join('').toUpperCase()
+      : adm.slice(0,2).toUpperCase();
+    document.getElementById('chip-initials').textContent = initials;
+    document.getElementById('info-box').style.display = 'block';
+
+    // Pre-fill success card
+    document.getElementById('suc-am').textContent   = amtFormatted;
+    document.getElementById('suc-name').textContent = name || adm;
+
+    if(status === 'Confirmed'){
+      // Already paid — show success directly
+      showState('success');
+      return;
+    }
+
+    // Pending — show UPI redirect screen
+    showState('redirecting');
+    setTimeout(function(){ document.getElementById('prog-bar').style.width='100%'; }, 50);
+
+    // Build UPI string
+    var upi = 'upi://pay?pa=' + encodeURIComponent(UPI_ID)
+            + '&pn=' + encodeURIComponent(SCHOOL_NAME)
+            + '&tr=' + encodeURIComponent(adm)
+            + '&tn=' + encodeURIComponent(adm)
+            + '&am=' + encodeURIComponent(am)
+            + '&cu=INR';
+    document.getElementById('pay-btn').href = upi;
+
+    // Auto-redirect to UPI app after 800ms
+    setTimeout(function(){ window.location.href = upi; }, 800);
+
+    // Start polling after user returns from UPI app
+    document.addEventListener('visibilitychange', function(){
+      if(!document.hidden) setTimeout(startPolling, 1500);
+    });
+    // Fallback: also start polling after 4s
+    setTimeout(startPolling, 4000);
+  }
+
+  // ── 3. Load server config (UPI_ID) + fetch registration status ──
+  if(SHEET_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE'){
+    // First load server config to get correct UPI ID
+    fetch(SHEET_URL + '?action=config')
+      .then(function(r){ return r.json(); })
+      .then(function(cfg){
+        if(cfg.upiId) UPI_ID = cfg.upiId;
+      })
+      .catch(function(){})
+      .finally(function(){
+        // Then fetch registration status
+        fetch(SHEET_URL + '?action=status&ref=' + encodeURIComponent(adm))
+          .then(function(r){ return r.json(); })
+          .then(function(d){
+            if(!d.found){ showState('error'); return; }
+            initPage(d.name || '', d.status || 'Pending');
+          })
+          .catch(function(){
+            // Network error — show page with whatever we have
+            initPage('', 'Pending');
+          });
+      });
+  } else {
+    // Dev mode — no sheet URL configured
+    initPage('', 'Pending');
+  }
+
+  // ── 4. Poll Apps Script for payment confirmation ──
+  var _pollTimer  = null;
+  var _pollCount  = 0;
+  var _maxPolls   = 60;   // 60 × 5s = 5 min
+  var _confirmed  = false;
+
+  function startPolling(){
+    if(_pollTimer || _confirmed) return;
+    _pollTimer = setInterval(pollPayment, 5000);
+    pollPayment(); // immediate first check
+  }
+
+  function pollPayment(){
+    if(_confirmed){ clearInterval(_pollTimer); return; }
+    _pollCount++;
+    if(_pollCount > _maxPolls){ clearInterval(_pollTimer); return; }
+
+    if(SHEET_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') return;
+
+    fetch(SHEET_URL + '?action=status&ref=' + encodeURIComponent(adm))
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if(d && d.found && d.status === 'Confirmed') confirmPayment();
+      })
+      .catch(function(){});
+  }
+
+  function confirmPayment(){
+    if(_confirmed) return;
+    _confirmed = true;
+    clearInterval(_pollTimer);
+    showState('success');
+  }
+
+})();
+
+// ── Inject CONFIG into HTML ──
+(function(){
+  document.getElementById('schoolName').textContent  = SCHOOL_NAME;
+  document.getElementById('schoolSub').textContent   = SCHOOL_SUB;
+  document.getElementById('heroTitle').textContent   = PROGRAMME;
+  document.title = 'Fee Payment — ' + PROGRAMME;
+  // Phone links
+  var phoneHref = 'tel:' + PHONE;
+  var waHref    = 'https://wa.me/' + WA_NUMBER;
+  ['helpPhone','errPhone'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.href = phoneHref;
+  });
+  var pt = document.getElementById('helpPhoneText');
+  if(pt) pt.textContent = PHONE;
+  ['helpWa','helpWa2'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.href = waHref;
+  });
+})();
+
+function showState(state){
+  ['redirecting','success','error'].forEach(function(s){
+    var el = document.getElementById('state-'+s);
+    if(!el) return;
+    if(s === state){
+      el.style.display  = 'block';
+      el.classList.add('active');
+    } else {
+      el.style.display  = 'none';
+      el.classList.remove('active');
+    }
+  });
+}
+</script>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
 <title>Fee Payment — CBSE Training 2025</title>
@@ -299,13 +489,13 @@ body{
       <img src="https://raw.githubusercontent.com/lamahajan/UPI-Redirect/main/Logo.png" alt="Lotus International School" style="width:62px;height:62px;object-fit:contain;"/>
 
       <div class="hero-school-text">
-        <div class="hero-school-wordmark">LOTUS INTERNATIONAL SCHOOL</div>
-        <div class="hero-school-sub">ALIKHAN DINANAGAR</div>
+        <div class="hero-school-wordmark" id="schoolName"></div>
+        <div class="hero-school-sub" id="schoolSub"></div>
       </div>
     </div>
     <div class="hero-divider"></div>
     <div class="hero-eyebrow"><span class="eyebrow-dot"></span>Secure Payment</div>
-    <div class="hero-title">CBSE Training 2025</div>
+    <div class="hero-title" id="heroTitle"></div>
   </div>
 
   <div class="body">
@@ -336,9 +526,9 @@ body{
       </div>
       <div class="btn-wrap">
         <a id="pay-btn" class="btn-primary" href="#">Open Payment App</a>
-        <a class="btn-secondary" href="tel:+919872760880" style="display:flex;align-items:center;justify-content:center;gap:7px;">
+        <a class="btn-secondary" id="helpPhone" href="#" style="display:flex;align-items:center;justify-content:center;gap:7px;">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
-          Need help? Call +91 98727-60880
+          Need help? Call <span id="helpPhoneText"></span>
         </a>
         <div class="secure">
           <svg width="10" height="12" viewBox="0 0 10 12" fill="none"><path d="M5 0L0 2V5.5C0 8.5 2.2 11.3 5 12C7.8 11.3 10 8.5 10 5.5V2L5 0Z" fill="#1d1d1f"/></svg>
@@ -375,11 +565,11 @@ body{
       <div class="err-sub">This link is invalid or may have expired. Please contact the school office to get a valid payment link.</div>
       <div class="err-divider"></div>
       <div class="err-actions">
-        <a class="err-cta" href="tel:+919872760880">
+        <a class="err-cta" id="errPhone" href="#">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
           Call School Office
         </a>
-        <a class="err-cta-sec" href="https://wa.me/919872760880" target="_blank">
+        <a class="err-cta-sec" id="helpWa2" href="#" target="_blank">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
           WhatsApp Us
         </a>
@@ -388,170 +578,5 @@ body{
   </div>
 
 </div>
-<script>
-// ── CBSE Training Pay Page ──
-// URL format: /pay/LIS-TRG-26-XXXXX/1200
-// Also supports legacy query params: ?adm=&am=&name=&class=
-
-// ── CONFIG — replace with your actual Apps Script URL ──
-var SHEET_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
-var UPI_ID    = 'lisdnn@icici';  // fallback; overridden by server config
-
-(function(){
-
-  // ── 1. Parse ref + amount from path OR query params ──
-  var adm = '', am = '', name = '', cls = '';
-
-  // Hash-based: training.lisdnn.org/pay/#LIS-TRG-26-XXXXX/1200 (GitHub Pages compatible)
-  var hashMatch = window.location.hash.replace("#","").match(/^([^/]+)\/(\d+)/);
-  var pathMatch = window.location.pathname.match(/\/pay\/([^\/]+)\/([\d]+)/);
-
-  if(hashMatch){
-    adm = hashMatch[1].trim();
-    am  = hashMatch[2].trim();
-  } else if(pathMatch){
-    adm = pathMatch[1].trim();
-    am  = pathMatch[2].trim();
-  } else {
-    var p = new URLSearchParams(window.location.search);
-    adm   = (p.get("adm")   ||"").trim();
-    am    = (p.get("am")    ||"").trim();
-    name  = (p.get("name")  ||"").trim();
-    cls   = (p.get("class") ||"").trim();
-  }
-
-  if(!adm || !am || isNaN(parseFloat(am))){
-    showState('error'); return;
-  }
-
-  var amtFormatted = '₹' + parseFloat(am).toLocaleString('en-IN');
-
-  // ── 2. Fetch name + status from Apps Script ──
-  function initPage(fetchedName, status){
-    name = fetchedName || name || '';
-    cls  = cls || 'CBSE Training 2025';
-
-    // Fill info box
-    document.getElementById('disp-name').textContent  = name || '—';
-    document.getElementById('disp-adm').textContent   = adm;
-    document.getElementById('disp-class').textContent = cls;
-    document.getElementById('disp-am').textContent    = amtFormatted;
-    var initials = name
-      ? name.trim().split(' ').map(function(w){return w[0]||'';}).slice(0,2).join('').toUpperCase()
-      : adm.slice(0,2).toUpperCase();
-    document.getElementById('chip-initials').textContent = initials;
-    document.getElementById('info-box').style.display = 'block';
-
-    // Pre-fill success card
-    document.getElementById('suc-am').textContent   = amtFormatted;
-    document.getElementById('suc-name').textContent = name || adm;
-
-    if(status === 'Confirmed'){
-      // Already paid — show success directly
-      showState('success');
-      return;
-    }
-
-    // Pending — show UPI redirect screen
-    showState('redirecting');
-    setTimeout(function(){ document.getElementById('prog-bar').style.width='100%'; }, 50);
-
-    // Build UPI string
-    var upi = 'upi://pay?pa=' + encodeURIComponent(UPI_ID)
-            + '&pn=' + encodeURIComponent('LOTUS INTERNATIONAL SCHOOL')
-            + '&tr=' + encodeURIComponent(adm)
-            + '&tn=' + encodeURIComponent(adm)
-            + '&am=' + encodeURIComponent(am)
-            + '&cu=INR';
-    document.getElementById('pay-btn').href = upi;
-
-    // Auto-redirect to UPI app after 800ms
-    setTimeout(function(){ window.location.href = upi; }, 800);
-
-    // Start polling after user returns from UPI app
-    document.addEventListener('visibilitychange', function(){
-      if(!document.hidden) setTimeout(startPolling, 1500);
-    });
-    // Fallback: also start polling after 4s
-    setTimeout(startPolling, 4000);
-  }
-
-  // ── 3. Load server config (UPI_ID) + fetch registration status ──
-  if(SHEET_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE'){
-    // First load server config to get correct UPI ID
-    fetch(SHEET_URL + '?action=config')
-      .then(function(r){ return r.json(); })
-      .then(function(cfg){
-        if(cfg.upiId) UPI_ID = cfg.upiId;
-      })
-      .catch(function(){})
-      .finally(function(){
-        // Then fetch registration status
-        fetch(SHEET_URL + '?action=status&ref=' + encodeURIComponent(adm))
-          .then(function(r){ return r.json(); })
-          .then(function(d){
-            if(!d.found){ showState('error'); return; }
-            initPage(d.name || '', d.status || 'Pending');
-          })
-          .catch(function(){
-            // Network error — show page with whatever we have
-            initPage('', 'Pending');
-          });
-      });
-  } else {
-    // Dev mode — no sheet URL configured
-    initPage('', 'Pending');
-  }
-
-  // ── 4. Poll Apps Script for payment confirmation ──
-  var _pollTimer  = null;
-  var _pollCount  = 0;
-  var _maxPolls   = 60;   // 60 × 5s = 5 min
-  var _confirmed  = false;
-
-  function startPolling(){
-    if(_pollTimer || _confirmed) return;
-    _pollTimer = setInterval(pollPayment, 5000);
-    pollPayment(); // immediate first check
-  }
-
-  function pollPayment(){
-    if(_confirmed){ clearInterval(_pollTimer); return; }
-    _pollCount++;
-    if(_pollCount > _maxPolls){ clearInterval(_pollTimer); return; }
-
-    if(SHEET_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') return;
-
-    fetch(SHEET_URL + '?action=status&ref=' + encodeURIComponent(adm))
-      .then(function(r){ return r.json(); })
-      .then(function(d){
-        if(d && d.found && d.status === 'Confirmed') confirmPayment();
-      })
-      .catch(function(){});
-  }
-
-  function confirmPayment(){
-    if(_confirmed) return;
-    _confirmed = true;
-    clearInterval(_pollTimer);
-    showState('success');
-  }
-
-})();
-
-function showState(state){
-  ['redirecting','success','error'].forEach(function(s){
-    var el = document.getElementById('state-'+s);
-    if(!el) return;
-    if(s === state){
-      el.style.display  = 'block';
-      el.classList.add('active');
-    } else {
-      el.style.display  = 'none';
-      el.classList.remove('active');
-    }
-  });
-}
-</script>
 </body>
 </html>
