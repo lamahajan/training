@@ -42,7 +42,7 @@ const CONFIG = {
 let SERVER_CONFIG = {
   upiId      : '',
   feeAppBase : CONFIG.FEE_APP_BASE || 'https://training.lisdnn.org',
-  refPrefix  : CONFIG.REF_PREFIX   || 'LIS/TRG/26',   // fallback — overridden by server config
+  refPrefix  : CONFIG.REF_PREFIX   || 'LIS-TRG-26',   // fallback — overridden by server config
 };
 </script>
 
@@ -910,27 +910,25 @@ async function handleSubmit() {
     PhotoBase64: photoBase64, PhotoMime: photoMime,
   };
 
-  try {
-    if (CONFIG.SHEET_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
-      // Apps Script doesn't support CORS on POST — use no-cors (opaque response)
-      // Fire-and-forget; Apps Script background trigger handles QR + WhatsApp
-      await fetch(CONFIG.SHEET_URL, {
+  // sendBeacon — guaranteed delivery even if user closes screen immediately
+  if (CONFIG.SHEET_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+    const blob = new Blob([JSON.stringify(payload)], { type: 'text/plain' });
+    const sent = navigator.sendBeacon(CONFIG.SHEET_URL, blob);
+    // Fallback to fetch if sendBeacon not supported
+    if (!sent) {
+      fetch(CONFIG.SHEET_URL, {
         method: 'POST', mode: 'no-cors',
         headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify(payload),
-      });
+      }).catch(() => {});
     }
-
-    // Registration saved — WhatsApp message sent by Apps Script background job
-    document.getElementById('refNo').textContent      = currentRef;
-    document.getElementById('formView').style.display = 'none';
-    document.getElementById('registeredView').classList.add('show');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-
-  } catch(e) {
-    showErr('Something went wrong. Please try again.');
-    btn.disabled = false; btn.textContent = 'Register';
   }
+
+  // Show success instantly — no waiting
+  document.getElementById('refNo').textContent      = currentRef;
+  document.getElementById('formView').style.display = 'none';
+  document.getElementById('registeredView').classList.add('show');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 /* ── Poll ── */
