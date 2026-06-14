@@ -35,7 +35,7 @@ const CONFIG = {
   TOTAL_SEATS      : 5,
   SEATS_WARNING_AT : 3,
   // ↓ Only this is needed — Apps Script deployed URL (safe to expose)
-  SHEET_URL        : 'https://script.google.com/macros/s/AKfycbzOi19g8mTi4D6oyJYmdTepa1IR02pN6Szt6XJGwbF_bfL8-6h-yBIxEICRhSA_by2NqQ/exec',
+  SHEET_URL        : 'https://script.google.com/macros/s/AKfycbxZUU49b6oLs5qX9262uP3O7LZJsUfH-ig6hDSgr8RhpQ_XRYpV0iiy9HVHr7EiwdehXg/exec',
 };
 
 // Populated at runtime from Apps Script /config endpoint
@@ -742,13 +742,13 @@ const observer = new IntersectionObserver(entries => {
 }, { threshold: 0.06 });
 document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 
-/* ── Seat check ── */
+/* ── Single init — config + seats in one request ── */
 let seatsAvailable = CONFIG.TOTAL_SEATS;
 
-async function checkSeats() {
+async function init() {
   const banner = document.getElementById('seatBanner');
 
-  // ── Deadline check — lock form if past REG_DEADLINE ──
+  // Deadline check
   if (CONFIG.REG_DEADLINE) {
     const deadline = new Date(CONFIG.REG_DEADLINE);
     if (!isNaN(deadline) && new Date() > deadline) {
@@ -758,18 +758,28 @@ async function checkSeats() {
     }
   }
 
+  if (CONFIG.SHEET_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+    renderSeatBar(banner, CONFIG.TOTAL_SEATS, CONFIG.TOTAL_SEATS);
+    return;
+  }
+
   try {
-    if (CONFIG.SHEET_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
-      renderSeatBar(banner, CONFIG.TOTAL_SEATS, CONFIG.TOTAL_SEATS); return;
-    }
     const res  = await fetch(CONFIG.SHEET_URL);
     const data = await res.json();
+
+    // Config override from server
+    SERVER_CONFIG.upiId      = data.upiId      || '';
+    SERVER_CONFIG.feeAppBase = data.feeAppBase  || '';
+    SERVER_CONFIG.refPrefix  = data.refPrefix   || '';
+    if (data.total)          CONFIG.TOTAL_SEATS      = data.total;
+    if (data.seatsWarningAt) CONFIG.SEATS_WARNING_AT = data.seatsWarningAt;
+
+    // Seats
     seatsAvailable = data.available ?? CONFIG.TOTAL_SEATS;
     renderSeatBar(banner, seatsAvailable, CONFIG.TOTAL_SEATS);
-    if (seatsAvailable <= 0) {
-      document.getElementById('formView').style.display = 'none';
-    }
-  } catch (e) { console.warn('Seat check failed.'); }
+    if (seatsAvailable <= 0) document.getElementById('formView').style.display = 'none';
+
+  } catch(e) { console.warn('Init failed.'); }
 }
 
 function renderSeatBar(banner, available, total) {
@@ -975,22 +985,7 @@ function showSuccess(refNo, name, phone) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-/* ── Load server config (UPI ID, feeAppBase, refPrefix) ── */
-async function loadServerConfig() {
-  if (CONFIG.SHEET_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') return;
-  try {
-    const res  = await fetch(`${CONFIG.SHEET_URL}?action=config`);
-    const data = await res.json();
-    SERVER_CONFIG.upiId      = data.upiId      || '';
-    SERVER_CONFIG.feeAppBase = data.feeAppBase  || '';
-    SERVER_CONFIG.refPrefix  = data.refPrefix   || '';
-    if (data.totalSeats)      CONFIG.TOTAL_SEATS      = data.totalSeats;
-    if (data.seatsWarningAt)  CONFIG.SEATS_WARNING_AT = data.seatsWarningAt;
-  } catch(e) { console.warn('Could not load server config:', e); }
-}
-
-// Config pehle load karo, phir seats check karo — warna purani hardcoded values use hongi
-loadServerConfig().then(() => checkSeats());
+init();
 
 /* ── Countdown Timer ── */
 (function startCountdown() {
