@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<title>Fee Payment — CBSE Training 2025</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+/* ── Dynamic vh fix: JS sets --dvh, fallback to 1vh ── */
+:root{
+  --dvh: 1vh;
+  /* spacing scale — shrinks on very small screens */
+  --sp-xs: clamp(3px,  0.8vw, 5px);
+  --sp-sm: clamp(6px,  1.5vw, 10px);
+  --sp-md: clamp(9px,  2.2vw, 14px);
+  --sp-lg: clamp(12px, 3vw,   18px);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+html{height:100%;overflow:hidden;}
+body{
+  /* dvh = real visible height on mobile (excludes browser chrome) */
+  height: calc(var(--dvh) * 100);
+  min-height: calc(var(--dvh) * 100);
+  max-height: calc(var(--dvh) * 100);
+  overflow:hidden;
+  background:#f5f5f7;
+  font-family:"Inter",-apple-system,BlinkMacSystemFont,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  display:flex;flex-direction:column;align-items:center;
+}
+
+/* ── Outer wrapper: exactly full screen height, no overflow ── */
+.wrap{
+  width:100%;max-width:430px;
+  height: calc(var(--dvh) * 100);
+  display:flex;flex-direction:column;
+  background:#fff;
+  overflow:hidden;
+}
+
+/* ── Hero: shrinks proportionally on short screens ── */
+.hero{
+  background:
+    radial-gradient(ellipse 140% 120% at 80% -10%, #0a3d8f 0%, transparent 55%),
+    radial-gradient(ellipse 100% 80% at -10% 110%, #082660 0%, transparent 60%),
+    radial-gradient(ellipse 80% 60% at 50% 50%, #092e78 0%, transparent 70%),
+    linear-gradient(175deg, #0d2a6e 0%, #001848 40%, #092e78 100%);
+  /* top/bottom pad shrinks on short screens */
+  padding: clamp(20px,5vh,34px) 20px clamp(22px,5vh,36px);
+  text-align:center;
+  position:relative;overflow:hidden;
+  flex-shrink:0;
+  border-radius: 0 0 22px 22px;
+}
+.hero::before{
+  content:"";position:absolute;
+  top:-50px;left:50%;transform:translateX(-50%);
+  width:280px;height:180px;
+  background:radial-gradient(ellipse,rgba(255,255,255,.07) 0%,transparent 70%);
+  pointer-events:none;
+}
+
+.hero-logo{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap: clamp(6px,1.5vh,10px);
+  margin-bottom: clamp(12px,2.5vh,18px);
+  position:relative;z-index:1;
+}
+.hero-school-text{text-align:center;}
+.hero-school-wordmark{
+  font-size: clamp(11px,2.8vw,13.5px);
+  font-weight:700;color:rgba(255,255,255,.92);
+  letter-spacing:1.6px;text-transform:uppercase;line-height:1.4;
+}
+.hero-school-sub{
+  font-size: clamp(9px,2.2vw,10.5px);
+  font-weight:600;color:rgba(255,255,255,.4);
+  letter-spacing:1.4px;text-transform:uppercase;margin-top:1px;
+}
+.hero-divider{
+  width:28px;height:1px;background:rgba(255,255,255,.15);
+  margin: 0 auto clamp(5px,1.2vh,9px);
+  position:relative;z-index:1;
+}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:9px;font-weight:600;
+  color:rgba(255,255,255,.45);letter-spacing:1.8px;text-transform:uppercase;
+  margin-bottom: clamp(4px,1vh,7px);
+  margin-top: clamp(12px,3vh,20px);
+  position:relative;z-index:1;
+}
+.eyebrow-dot{width:5px;height:5px;border-radius:50%;background:#4ade80;flex-shrink:0;}
+.hero-title{
+  font-size: clamp(17px,4.5vw,20px);
+  font-weight:800;color:#fff;letter-spacing:-.5px;
+  position:relative;z-index:1;
+}
+
+/* ── White card body: fills remaining height, NO overflow ── */
+.body{
+  flex:1;
+  min-height:0;          /* critical: lets flex child shrink below content size */
+  overflow:clip;
+  /* top gap user requested — rounded card lifted from hero with breathing room */
+  padding: clamp(22px,4vh,32px) 20px clamp(14px,2.5vh,22px);
+  border-radius:22px 22px 0 0;
+  margin-top: clamp(10px,2vh,16px);
+  position:relative;z-index:1;
+  background:#fff;
+  display:flex;flex-direction:column;
+}
+
+/* ── Info box ── */
+#info-box{display:none;}
+
+.stu-row{display:flex;align-items:center;gap:11px;margin-bottom: clamp(10px,2vh,16px);}
+.avatar{
+  width: clamp(40px,9vw,48px);height: clamp(40px,9vw,48px);
+  flex-shrink:0;border-radius:10px;
+  background:linear-gradient(135deg,#0f2545,#1a3a6e);
+  display:flex;align-items:center;justify-content:center;
+  font-size: clamp(10px,2.5vw,12px);font-weight:700;color:#fff;
+}
+.stu-name{font-size: clamp(13px,3.3vw,15px);font-weight:700;color:#1d1d1f;letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.stu-adm{font-size: clamp(10.5px,2.6vw,12px);color:#6e6e73;margin-top:1px;}
+.stu-class{font-size: clamp(10.5px,2.6vw,12px);color:#6e6e73;margin-top:1px;}
+.sep{height:1px;background:#f0f0f0;margin: 0 0 clamp(12px,2.5vh,20px);}
+
+.amount-label{font-size:9.5px;font-weight:600;color:#aeaeb2;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:2px;}
+.amount-row{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom: clamp(12px,2vh,18px);}
+.amount-val{
+  font-size: clamp(27px,7vw,34px);
+  font-weight:800;color:#1d1d1f;letter-spacing:-1.2px;line-height:1;
+}
+.due-pill{
+  font-size:10px;font-weight:700;color:#f59e0b;
+  background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);
+  padding:3px 9px;border-radius:20px;letter-spacing:.4px;text-transform:uppercase;margin-bottom:2px;
+}
+
+.upi-row{display:flex;gap:7px;margin-bottom: clamp(18px,3.5vh,26px);}
+.upi-chip{
+  flex:1;text-align:center;background:#f5f5f7;border-radius:8px;
+  padding: clamp(7px,1.5vh,10px) 2px;
+  font-size: clamp(8.5px,2.2vw,10px);font-weight:600;color:#3a3a3c;letter-spacing:.2px;
+}
+
+.prog-wrap{height:2px;background:#e8e8ed;border-radius:2px;overflow:hidden;margin-bottom: clamp(10px,2vh,16px);}
+.prog-bar{height:100%;background:#0071e3;border-radius:2px;width:0;transition:width .8s linear;}
+
+#state-redirecting{display:none;}
+#state-redirecting.active{display:flex;flex-direction:column;flex:1;position:relative;min-height:0;}
+.btn-wrap{position:absolute;bottom:15px;left:0;right:0;}
+
+.btn-primary{
+  display:block;width:100%;
+  background:#0071e3;color:#fff;
+  font-size: clamp(13px,3.3vw,15px);font-weight:600;border:none;border-radius:12px;
+  padding: clamp(10px,2.5vh,13px);
+  text-align:center;text-decoration:none;cursor:pointer;
+  box-shadow:0 2px 10px rgba(0,113,227,.22);
+  transition:all .15s;margin-bottom: clamp(10px,2vh,16px);
+}
+.btn-primary:active{background:#005bbf;transform:scale(.985);}
+.btn-secondary{
+  display:block;width:100%;
+  background:#f5f5f7;color:#1d1d1f;
+  font-size: clamp(13px,3.3vw,15px);font-weight:500;border:none;border-radius:12px;
+  padding: clamp(11px,2.5vh,14px);
+  text-align:center;text-decoration:none;cursor:pointer;
+  transition:all .15s;margin-bottom: clamp(10px,2vh,16px);
+}
+.btn-secondary:active{background:#e8e8ed;}
+
+.secure{display:flex;align-items:center;justify-content:center;gap:5px;}
+.secure svg{opacity:.3;}
+.secure span{font-size: clamp(9.5px,2.4vw,11px);color:#aeaeb2;}
+
+/* ── Footer: pinned, compact ── */
+.footer{
+  flex-shrink:0;
+  background:#f5f5f7;
+  border-top:1px solid #e8e8ed;
+  padding: clamp(6px,1.2vh,10px) 20px clamp(10px,2vh,14px);
+  text-align:center;
+}
+.footer-school{font-size:12px;font-weight:600;color:#3a3a3c;margin-bottom:1px;}
+.footer-label{font-size:10px;color:#aeaeb2;margin-bottom: clamp(3px,0.8vh,6px);}
+.call-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  background:#fff;border:1px solid #e0e0e5;border-radius:980px;
+  padding: clamp(5px,1.2vh,8px) 16px;
+  font-size: clamp(11px,2.8vw,13px);font-weight:600;color:#0071e3;
+  text-decoration:none;box-shadow:0 1px 3px rgba(0,0,0,.05);transition:all .15s;
+}
+.call-btn:active{transform:scale(.97);}
+
+/* ── Error state ── */
+#state-error{display:none;text-align:center;}
+#state-error.active{display:flex;flex-direction:column;align-items:center;position:absolute;inset:0;padding: clamp(18px,3.5vh,26px) 20px 30px;}
+.err-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  background:rgba(255,59,48,.08);border:1px solid rgba(255,59,48,.15);
+  border-radius:20px;padding:4px 12px;
+  font-size:10px;font-weight:700;color:#ff3b30;letter-spacing:1.2px;text-transform:uppercase;
+  margin-bottom: var(--sp-md);
+}
+.err-icon-wrap{
+  width: clamp(54px,14vw,68px);height: clamp(54px,14vw,68px);border-radius:20px;
+  background:linear-gradient(145deg,#fff8f7 0%,#ffecea 100%);
+  border:1px solid rgba(255,59,48,.1);
+  box-shadow:0 4px 20px rgba(255,59,48,.08), 0 1px 3px rgba(0,0,0,.04);
+  display:flex;align-items:center;justify-content:center;
+  margin: clamp(28px,6vh,42px) auto clamp(18px,4vh,28px);
+  font-size: clamp(24px,6vw,30px);
+  position:relative;
+}
+.err-icon-wrap::after{
+  content:"";position:absolute;inset:-5px;border-radius:25px;
+  border:1px solid rgba(255,59,48,.06);
+}
+.err-msg{font-size: clamp(16px,4vw,19px);font-weight:800;color:#1d1d1f;letter-spacing:-.5px;margin-bottom: var(--sp-xs);text-align:center;}
+.err-sub{font-size: clamp(11.5px,2.9vw,13px);color:#6e6e73;line-height:1.6;margin: 0 auto clamp(20px,4vh,30px);max-width:260px;text-align:center;width:100%;}
+.err-divider{width:100%;height:1px;background:#f0f0f0;margin: 0 0 clamp(20px,4vh,30px);}
+.err-actions{margin-top:auto;width:100%;display:flex;flex-direction:column;gap: var(--sp-sm);}
+.err-cta{
+  display:flex;align-items:center;justify-content:center;gap:9px;
+  background:linear-gradient(135deg,#0071e3,#0077ed);color:#fff;
+  font-size: clamp(13px,3.3vw,15px);font-weight:600;border-radius:13px;
+  padding: clamp(11px,2.5vh,14px);text-decoration:none;
+  box-shadow:0 4px 14px rgba(0,113,227,.28);transition:all .15s;
+}
+.err-cta:active{transform:scale(.985);box-shadow:0 2px 8px rgba(0,113,227,.2);}
+.err-cta-sec{
+  display:flex;align-items:center;justify-content:center;gap:9px;
+  background:#f5f5f7;color:#1d1d1f;
+  font-size: clamp(13px,3.3vw,15px);font-weight:500;border-radius:13px;
+  padding: clamp(10px,2.2vh,13px);text-decoration:none;
+  border:1px solid #e8e8ed;transition:all .15s;
+}
+.err-cta-sec:active{background:#ebebed;}
+.err-note{font-size:11px;color:#aeaeb2;letter-spacing:.2px;text-align:center;}
+
+/* ── Success state ── */
+#state-success{display:none;}
+#state-success.active{display:flex;flex-direction:column;align-items:center;position:absolute;inset:0;padding:clamp(18px,3.5vh,26px) 20px 30px;}
+.suc-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  background:rgba(52,199,89,.1);border:1px solid rgba(52,199,89,.2);
+  border-radius:20px;padding:4px 12px;
+  font-size:10px;font-weight:700;color:#34c759;letter-spacing:1.2px;text-transform:uppercase;
+  margin-bottom:var(--sp-md);
+}
+.suc-icon-wrap{
+  width:clamp(64px,16vw,80px);height:clamp(64px,16vw,80px);border-radius:24px;
+  background:linear-gradient(145deg,#f0fff4,#dcfce7);
+  border:1px solid rgba(52,199,89,.15);
+  box-shadow:0 8px 32px rgba(52,199,89,.15),0 2px 6px rgba(0,0,0,.04);
+  display:flex;align-items:center;justify-content:center;
+  margin:clamp(20px,4.5vh,34px) auto clamp(14px,3vh,22px);
+  font-size:clamp(28px,7vw,36px);
+  position:relative;animation:suc-pop .45s cubic-bezier(.34,1.56,.64,1) both;
+}
+.suc-icon-wrap::after{
+  content:"";position:absolute;inset:-6px;border-radius:30px;
+  border:1px solid rgba(52,199,89,.08);
+}
+@keyframes suc-pop{from{transform:scale(.6);opacity:0;}to{transform:scale(1);opacity:1;}}
+.suc-msg{font-size:clamp(18px,4.5vw,22px);font-weight:800;color:#1d1d1f;letter-spacing:-.5px;margin-bottom:4px;text-align:center;}
+.suc-sub{font-size:clamp(12px,3vw,13.5px);color:#6e6e73;line-height:1.6;margin:0 auto clamp(16px,3vh,24px);max-width:260px;text-align:center;}
+.suc-amount-card{
+  width:100%;background:linear-gradient(135deg,#f0fff4,#dcfce7);
+  border:1px solid rgba(52,199,89,.2);border-radius:14px;
+  padding:clamp(12px,2.5vh,16px) 18px;margin-bottom:clamp(16px,3vh,22px);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.suc-amount-label{font-size:11px;font-weight:600;color:#16a34a;letter-spacing:.8px;text-transform:uppercase;}
+.suc-amount-val{font-size:clamp(22px,5.5vw,27px);font-weight:800;color:#15803d;letter-spacing:-1px;}
+.suc-divider{width:100%;height:1px;background:#f0f0f0;margin:0 0 clamp(16px,3vh,22px);}
+.suc-actions{margin-top:auto;width:100%;}
+.suc-cta{
+  display:flex;align-items:center;justify-content:center;
+  background:#34c759;color:#fff;
+  font-size:clamp(13px,3.3vw,15px);font-weight:600;border-radius:13px;
+  padding:clamp(11px,2.5vh,14px);text-decoration:none;border:none;width:100%;
+  box-shadow:0 4px 14px rgba(52,199,89,.3);transition:all .15s;cursor:pointer;
+}
+.suc-cta:active{transform:scale(.985);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div class="hero-logo">
+      <img src="https://raw.githubusercontent.com/lamahajan/UPI-Redirect/main/Logo.png" alt="Lotus International School" style="width:62px;height:62px;object-fit:contain;"/>
+
+      <div class="hero-school-text">
+        <div class="hero-school-wordmark">LOTUS INTERNATIONAL SCHOOL</div>
+        <div class="hero-school-sub">ALIKHAN DINANAGAR</div>
+      </div>
+    </div>
+    <div class="hero-divider"></div>
+    <div class="hero-eyebrow"><span class="eyebrow-dot"></span>Secure Payment</div>
+    <div class="hero-title">CBSE Training 2025</div>
+  </div>
+
+  <div class="body">
+    <div id="info-box">
+      <div class="stu-row">
+        <div class="avatar" id="chip-initials">—</div>
+        <div class="stu-meta">
+          <div class="stu-name" id="disp-name">—</div>
+          <div class="stu-adm">Adm No. <span id="disp-adm">—</span></div>
+          <div class="stu-class">Programme: <span id="disp-class">—</span></div>
+        </div>
+      </div>
+      <div class="sep"></div>
+      <div class="amount-label">Amount Due</div>
+      <div class="amount-row">
+        <div class="amount-val" id="disp-am">—</div>
+        <div class="due-pill">Due Now</div>
+      </div>
+    </div>
+
+    <div id="state-redirecting">
+      <div class="prog-wrap"><div class="prog-bar" id="prog-bar"></div></div>
+      <div class="upi-row">
+        <div class="upi-chip">GPay</div>
+        <div class="upi-chip">PhonePe</div>
+        <div class="upi-chip">Paytm</div>
+        <div class="upi-chip">BHIM</div>
+      </div>
+      <div class="btn-wrap">
+        <a id="pay-btn" class="btn-primary" href="#">Open Payment App</a>
+        <a class="btn-secondary" href="tel:+919872760880" style="display:flex;align-items:center;justify-content:center;gap:7px;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+          Need help? Call +91 98727-60880
+        </a>
+        <div class="secure">
+          <svg width="10" height="12" viewBox="0 0 10 12" fill="none"><path d="M5 0L0 2V5.5C0 8.5 2.2 11.3 5 12C7.8 11.3 10 8.5 10 5.5V2L5 0Z" fill="#1d1d1f"/></svg>
+          <span>256-bit encrypted · Amount pre-filled</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="state-success">
+      <div class="suc-badge">✓ Payment Confirmed</div>
+      <div class="suc-icon-wrap">✅</div>
+      <div class="suc-msg">Payment Successful!</div>
+      <div class="suc-sub">Your fee payment has been received and confirmed by the school.</div>
+      <div class="suc-amount-card">
+        <div>
+          <div class="suc-amount-label">Amount Paid</div>
+          <div class="suc-amount-val" id="suc-am">—</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="suc-amount-label">Student</div>
+          <div style="font-size:13px;font-weight:700;color:#15803d;" id="suc-name">—</div>
+        </div>
+      </div>
+      <div class="suc-divider"></div>
+      <div class="suc-actions">
+        <button class="suc-cta" onclick="window.close()">Done</button>
+      </div>
+    </div>
+
+    <div id="state-error">
+      <div class="err-badge">⚠ Invalid Link</div>
+      <div class="err-icon-wrap">🔗</div>
+      <div class="err-msg">Payment Link Invalid</div>
+      <div class="err-sub">This link is invalid or may have expired. Please contact the school office to get a valid payment link.</div>
+      <div class="err-divider"></div>
+      <div class="err-actions">
+        <a class="err-cta" href="tel:+919872760880">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+          Call School Office
+        </a>
+        <a class="err-cta-sec" href="https://wa.me/919872760880" target="_blank">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+          WhatsApp Us
+        </a>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script>
+// ── CBSE Training Pay Page ──
+// URL format: /pay/LIS-TRG-26-XXXXX/1200
+// Also supports legacy query params: ?adm=&am=&name=&class=
+
+// ── CONFIG — replace with your actual Apps Script URL ──
+var SHEET_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
+var UPI_ID    = 'lisdnn@icici';  // fallback; overridden by server config
+
+(function(){
+
+  // ── 1. Parse ref + amount from path OR query params ──
+  var adm = '', am = '', name = '', cls = '';
+
+  // Hash-based: training.lisdnn.org/pay/#LIS-TRG-26-XXXXX/1200 (GitHub Pages compatible)
+  var hashMatch = window.location.hash.replace("#","").match(/^([^/]+)\/(\d+)/);
+  var pathMatch = window.location.pathname.match(/\/pay\/([^\/]+)\/([\d]+)/);
+
+  if(hashMatch){
+    adm = hashMatch[1].trim();
+    am  = hashMatch[2].trim();
+  } else if(pathMatch){
+    adm = pathMatch[1].trim();
+    am  = pathMatch[2].trim();
+  } else {
+    var p = new URLSearchParams(window.location.search);
+    adm   = (p.get("adm")   ||"").trim();
+    am    = (p.get("am")    ||"").trim();
+    name  = (p.get("name")  ||"").trim();
+    cls   = (p.get("class") ||"").trim();
+  }
+
+  if(!adm || !am || isNaN(parseFloat(am))){
+    showState('error'); return;
+  }
+
+  var amtFormatted = '₹' + parseFloat(am).toLocaleString('en-IN');
+
+  // ── 2. Fetch name + status from Apps Script ──
+  function initPage(fetchedName, status){
+    name = fetchedName || name || '';
+    cls  = cls || 'CBSE Training 2025';
+
+    // Fill info box
+    document.getElementById('disp-name').textContent  = name || '—';
+    document.getElementById('disp-adm').textContent   = adm;
+    document.getElementById('disp-class').textContent = cls;
+    document.getElementById('disp-am').textContent    = amtFormatted;
+    var initials = name
+      ? name.trim().split(' ').map(function(w){return w[0]||'';}).slice(0,2).join('').toUpperCase()
+      : adm.slice(0,2).toUpperCase();
+    document.getElementById('chip-initials').textContent = initials;
+    document.getElementById('info-box').style.display = 'block';
+
+    // Pre-fill success card
+    document.getElementById('suc-am').textContent   = amtFormatted;
+    document.getElementById('suc-name').textContent = name || adm;
+
+    if(status === 'Confirmed'){
+      // Already paid — show success directly
+      showState('success');
+      return;
+    }
+
+    // Pending — show UPI redirect screen
+    showState('redirecting');
+    setTimeout(function(){ document.getElementById('prog-bar').style.width='100%'; }, 50);
+
+    // Build UPI string
+    var upi = 'upi://pay?pa=' + encodeURIComponent(UPI_ID)
+            + '&pn=' + encodeURIComponent('LOTUS INTERNATIONAL SCHOOL')
+            + '&tr=' + encodeURIComponent(adm)
+            + '&tn=' + encodeURIComponent(adm)
+            + '&am=' + encodeURIComponent(am)
+            + '&cu=INR';
+    document.getElementById('pay-btn').href = upi;
+
+    // Auto-redirect to UPI app after 800ms
+    setTimeout(function(){ window.location.href = upi; }, 800);
+
+    // Start polling after user returns from UPI app
+    document.addEventListener('visibilitychange', function(){
+      if(!document.hidden) setTimeout(startPolling, 1500);
+    });
+    // Fallback: also start polling after 4s
+    setTimeout(startPolling, 4000);
+  }
+
+  // ── 3. Load server config (UPI_ID) + fetch registration status ──
+  if(SHEET_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE'){
+    // First load server config to get correct UPI ID
+    fetch(SHEET_URL + '?action=config')
+      .then(function(r){ return r.json(); })
+      .then(function(cfg){
+        if(cfg.upiId) UPI_ID = cfg.upiId;
+      })
+      .catch(function(){})
+      .finally(function(){
+        // Then fetch registration status
+        fetch(SHEET_URL + '?action=status&ref=' + encodeURIComponent(adm))
+          .then(function(r){ return r.json(); })
+          .then(function(d){
+            if(!d.found){ showState('error'); return; }
+            initPage(d.name || '', d.status || 'Pending');
+          })
+          .catch(function(){
+            // Network error — show page with whatever we have
+            initPage('', 'Pending');
+          });
+      });
+  } else {
+    // Dev mode — no sheet URL configured
+    initPage('', 'Pending');
+  }
+
+  // ── 4. Poll Apps Script for payment confirmation ──
+  var _pollTimer  = null;
+  var _pollCount  = 0;
+  var _maxPolls   = 60;   // 60 × 5s = 5 min
+  var _confirmed  = false;
+
+  function startPolling(){
+    if(_pollTimer || _confirmed) return;
+    _pollTimer = setInterval(pollPayment, 5000);
+    pollPayment(); // immediate first check
+  }
+
+  function pollPayment(){
+    if(_confirmed){ clearInterval(_pollTimer); return; }
+    _pollCount++;
+    if(_pollCount > _maxPolls){ clearInterval(_pollTimer); return; }
+
+    if(SHEET_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') return;
+
+    fetch(SHEET_URL + '?action=status&ref=' + encodeURIComponent(adm))
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if(d && d.found && d.status === 'Confirmed') confirmPayment();
+      })
+      .catch(function(){});
+  }
+
+  function confirmPayment(){
+    if(_confirmed) return;
+    _confirmed = true;
+    clearInterval(_pollTimer);
+    showState('success');
+  }
+
+})();
+
+function showState(state){
+  ['redirecting','success','error'].forEach(function(s){
+    var el = document.getElementById('state-'+s);
+    if(!el) return;
+    if(s === state){
+      el.style.display  = 'block';
+      el.classList.add('active');
+    } else {
+      el.style.display  = 'none';
+      el.classList.remove('active');
+    }
+  });
+}
+</script>
+</body>
+</html>
