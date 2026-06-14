@@ -23,7 +23,7 @@ const CONFIG = {
   EVENT_DATE       : 'July 12, 2026',
   EVENT_TIME       : '9:00 AM – 5:00 PM',
   EVENT_VENUE      : 'Lotus International School, Dinanagar',
-  REG_DEADLINE     : 'July 10',
+  REG_DEADLINE     : 'July 10, 2026 23:59:59',
   FEE_AMOUNT       : '750',
   FEE_CURRENCY     : '₹',
   FEE_DESC         : 'per participant · all-inclusive',
@@ -519,6 +519,28 @@ footer {
       <div class="meta-item"><span class="mi-icon">📍</span><span class="mi-label">Venue</span><span id="metaVenue"></span></div>
     </div>
   </section>
+
+  <!-- COUNTDOWN -->
+  <div id="countdownWrap" style="text-align:center;padding:0 24px 32px;">
+    <div id="countdownInner" style="
+      display:inline-flex;align-items:center;gap:6px;
+      background:rgba(255,255,255,0.9);
+      border:0.5px solid rgba(0,0,0,0.1);
+      border-radius:20px;
+      padding:14px 24px;
+      box-shadow:0 2px 20px rgba(0,0,0,0.07);
+      backdrop-filter:blur(16px);
+    ">
+      <span style="font-size:12px;color:#6e6e73;font-weight:500;margin-right:4px;">Registrations close in</span>
+      <span id="cdD" style="font-size:15px;font-weight:700;color:#1d1d1f;min-width:22px;text-align:center"></span><span style="font-size:12px;color:#6e6e73">d</span>
+      <span style="color:#aeaeb2;font-size:12px;margin:0 2px">·</span>
+      <span id="cdH" style="font-size:15px;font-weight:700;color:#1d1d1f;min-width:22px;text-align:center"></span><span style="font-size:12px;color:#6e6e73">h</span>
+      <span style="color:#aeaeb2;font-size:12px;margin:0 2px">·</span>
+      <span id="cdM" style="font-size:15px;font-weight:700;color:#1d1d1f;min-width:22px;text-align:center"></span><span style="font-size:12px;color:#6e6e73">m</span>
+      <span style="color:#aeaeb2;font-size:12px;margin:0 2px">·</span>
+      <span id="cdS" style="font-size:15px;font-weight:700;color:#0071e3;min-width:22px;text-align:center"></span><span style="font-size:12px;color:#6e6e73">s</span>
+    </div>
+  </div>
 </div>
 
 <!-- SEAT BANNER -->
@@ -728,7 +750,7 @@ async function checkSeats() {
 
   // ── Deadline check — lock form if past REG_DEADLINE ──
   if (CONFIG.REG_DEADLINE) {
-    const deadline = new Date('2025-07-10T23:59:59');
+    const deadline = new Date(CONFIG.REG_DEADLINE);
     if (!isNaN(deadline) && new Date() > deadline) {
       banner.innerHTML = `<div class="full-banner"><h3>Registration Closed</h3><p>The registration deadline was ${CONFIG.REG_DEADLINE}. Please contact the school for further assistance.</p></div>`;
       document.getElementById('formView').style.display = 'none';
@@ -737,7 +759,7 @@ async function checkSeats() {
   }
 
   try {
-    if (CONFIG.SHEET_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+    if (CONFIG.SHEET_URL === 'https://script.google.com/macros/s/AKfycbzfw1dd2ujr5h5fbNuGRpFkbV1o4i64o7jmjqjsYEs5n3V9RsKiU6VQeMwP6PYmSALcQw/exec') {
       renderSeatBar(banner, CONFIG.TOTAL_SEATS, CONFIG.TOTAL_SEATS); return;
     }
     const res  = await fetch(CONFIG.SHEET_URL);
@@ -911,7 +933,7 @@ async function handleSubmit() {
   };
 
   // sendBeacon — guaranteed delivery even if user closes screen immediately
-  if (CONFIG.SHEET_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+  if (CONFIG.SHEET_URL !== 'https://script.google.com/macros/s/AKfycbzfw1dd2ujr5h5fbNuGRpFkbV1o4i64o7jmjqjsYEs5n3V9RsKiU6VQeMwP6PYmSALcQw/exec') {
     const blob = new Blob([JSON.stringify(payload)], { type: 'text/plain' });
     const sent = navigator.sendBeacon(CONFIG.SHEET_URL, blob);
     // Fallback to fetch if sendBeacon not supported
@@ -933,7 +955,7 @@ async function handleSubmit() {
 
 /* ── Poll ── */
 function startPolling(refNo, name, phone) {
-  if (CONFIG.SHEET_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') return;
+  if (CONFIG.SHEET_URL === 'https://script.google.com/macros/s/AKfycbzfw1dd2ujr5h5fbNuGRpFkbV1o4i64o7jmjqjsYEs5n3V9RsKiU6VQeMwP6PYmSALcQw/exec') return;
   let attempts = 0;
   const interval = setInterval(async () => {
     if (++attempts > 60) { clearInterval(interval); return; }
@@ -955,7 +977,7 @@ function showSuccess(refNo, name, phone) {
 
 /* ── Load server config (UPI ID, feeAppBase, refPrefix) ── */
 async function loadServerConfig() {
-  if (CONFIG.SHEET_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') return;
+  if (CONFIG.SHEET_URL === 'https://script.google.com/macros/s/AKfycbzfw1dd2ujr5h5fbNuGRpFkbV1o4i64o7jmjqjsYEs5n3V9RsKiU6VQeMwP6PYmSALcQw/exec') return;
   try {
     const res  = await fetch(`${CONFIG.SHEET_URL}?action=config`);
     const data = await res.json();
@@ -968,11 +990,36 @@ async function loadServerConfig() {
 checkSeats();
 loadServerConfig();
 
+/* ── Countdown Timer ── */
+(function startCountdown() {
+  const wrap = document.getElementById('countdownWrap');
+  const deadline = new Date(CONFIG.REG_DEADLINE);
+  if (isNaN(deadline)) { wrap.style.display = 'none'; return; }
+
+  function tick() {
+    const diff = deadline - new Date();
+    if (diff <= 0) {
+      wrap.style.display = 'none';
+      return;
+    }
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    document.getElementById('cdD').textContent = d;
+    document.getElementById('cdH').textContent = String(h).padStart(2,'0');
+    document.getElementById('cdM').textContent = String(m).padStart(2,'0');
+    document.getElementById('cdS').textContent = String(s).padStart(2,'0');
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
+
 /* ── Handle ?ref= on page load (returning via WhatsApp link) ── */
 (async function checkRefOnLoad() {
   const params = new URLSearchParams(window.location.search);
   const ref = params.get('ref');
-  if (!ref || CONFIG.SHEET_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') return;
+  if (!ref || CONFIG.SHEET_URL === 'https://script.google.com/macros/s/AKfycbzfw1dd2ujr5h5fbNuGRpFkbV1o4i64o7jmjqjsYEs5n3V9RsKiU6VQeMwP6PYmSALcQw/exec') return;
 
   // Hide form immediately, show payment screen as loading state
   document.getElementById('formView').style.display = 'none';
