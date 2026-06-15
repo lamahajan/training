@@ -35,7 +35,7 @@ const CONFIG = {
   TOTAL_SEATS      : 5,
   SEATS_WARNING_AT : 3,
   // ↓ Only this is needed — Apps Script deployed URL (safe to expose)
-  SHEET_URL        : 'https://script.google.com/macros/s/AKfycbyF7EdeV6EWK_ZTvxflaX-INrrkTI6NI6pMsQJFNP7RPEzX2BUrQ26Yn68DVsU_lXUpnw/exec',
+  SHEET_URL        : 'https://script.google.com/macros/s/AKfycbzw_YfZ1VUD5AYBYLjjTBZ6CUzLxxjU5_1lspNKZaMjBt9oYhh-g9LevSKt2k6B4hYaWA/exec',
 };
 
 // Populated at runtime from Apps Script /config endpoint
@@ -491,6 +491,10 @@ footer {
   .page-body { padding: 0 14px 100px; }
   .seat-banner { padding: 0 14px; }
 }
+@keyframes navPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.75); }
+}
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; }
 }
@@ -504,7 +508,10 @@ footer {
     <img class="nav-logo-img" src="https://raw.githubusercontent.com/lamahajan/UPI-Redirect/main/Logo.png" alt="Logo">
     <span class="nav-school" id="navLogoText"></span>
   </div>
-  <div class="nav-pill" id="navBadge"></div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div class="nav-pill" id="navBadge"></div>
+    <div id="navSeatChip" style="display:none;align-items:center;gap:6px;font-size:11px;font-weight:600;letter-spacing:0.01em;border-radius:999px;padding:5px 12px;border:0.5px solid;white-space:nowrap;"></div>
+  </div>
 </nav>
 
 <!-- HERO -->
@@ -543,7 +550,7 @@ footer {
   </div>
 </div>
 
-<!-- SEAT BANNER -->
+<!-- SEAT BANNER (kept for full-seats fallback only) -->
 <div class="seat-banner" id="seatBanner" style="margin-bottom:16px;"></div>
 
 <!-- PAGE BODY -->
@@ -760,6 +767,7 @@ async function init() {
 
   if (CONFIG.SHEET_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
     renderSeatBar(banner, CONFIG.TOTAL_SEATS, CONFIG.TOTAL_SEATS);
+    updateNavSeatChip(CONFIG.TOTAL_SEATS, CONFIG.TOTAL_SEATS);
     return;
   }
 
@@ -771,12 +779,14 @@ async function init() {
     SERVER_CONFIG.upiId      = data.upiId      || '';
     SERVER_CONFIG.feeAppBase = data.feeAppBase  || '';
     SERVER_CONFIG.refPrefix  = data.refPrefix   || '';
+    // Always trust the sheet's total — no redeploy needed when you change CFG.TOTAL_SEATS in Apps Script
     if (data.total)          CONFIG.TOTAL_SEATS      = data.total;
     if (data.seatsWarningAt) CONFIG.SEATS_WARNING_AT = data.seatsWarningAt;
 
     // Seats
     seatsAvailable = data.available ?? CONFIG.TOTAL_SEATS;
     renderSeatBar(banner, seatsAvailable, CONFIG.TOTAL_SEATS);
+    updateNavSeatChip(seatsAvailable, CONFIG.TOTAL_SEATS);
     if (seatsAvailable <= 0) document.getElementById('formView').style.display = 'none';
 
   } catch(e) { console.warn('Init failed.'); }
@@ -785,17 +795,45 @@ async function init() {
 function renderSeatBar(banner, available, total) {
   if (available <= 0) {
     banner.innerHTML = `<div class="full-banner"><h3>Registration Closed</h3><p>All ${total} seats have been filled. Contact the school for the waitlist.</p></div>`;
+    banner.style.display = '';
     return;
   }
-  const taken = total - available;
-  const pct   = Math.round((taken / total) * 100);
-  const cls   = available <= CONFIG.SEATS_WARNING_AT ? (available <= 5 ? 'critical' : 'warning') : '';
-  const msg   = available <= CONFIG.SEATS_WARNING_AT ? `<strong>Only ${available} left!</strong>` : `<strong>${available}</strong> seats available`;
-  banner.innerHTML = `
-    <div class="seat-bar-wrap">
-      <div class="seat-bar-track"><div class="seat-bar-fill ${cls}" style="width:${pct}%"></div></div>
-      <div class="seat-label">${msg}</div>
-    </div>`;
+  // Seat count now lives in the nav chip — hide the banner strip when seats exist
+  banner.style.display = 'none';
+}
+
+function updateNavSeatChip(available, total) {
+  const chip = document.getElementById('navSeatChip');
+  if (!chip) return;
+  chip.style.display = 'flex';
+
+  if (available <= 0) {
+    chip.textContent = 'Full';
+    chip.style.color = '#ff3b30';
+    chip.style.background = 'rgba(255,59,48,0.08)';
+    chip.style.borderColor = 'rgba(255,59,48,0.25)';
+    return;
+  }
+
+  const isCritical = available <= 5;
+  const isWarning  = available <= CONFIG.SEATS_WARNING_AT;
+
+  if (isCritical) {
+    chip.innerHTML = `<span style="width:6px;height:6px;border-radius:50%;background:#ff3b30;animation:navPulse 1.2s infinite;flex-shrink:0;"></span>${available} left`;
+    chip.style.color = '#c40000';
+    chip.style.background = 'rgba(255,59,48,0.08)';
+    chip.style.borderColor = 'rgba(255,59,48,0.25)';
+  } else if (isWarning) {
+    chip.innerHTML = `<span style="width:6px;height:6px;border-radius:50%;background:#ff9f0a;flex-shrink:0;"></span>${available} seats left`;
+    chip.style.color = '#b25000';
+    chip.style.background = 'rgba(255,159,10,0.08)';
+    chip.style.borderColor = 'rgba(255,159,10,0.25)';
+  } else {
+    chip.innerHTML = `<span style="width:6px;height:6px;border-radius:50%;background:#34c759;flex-shrink:0;"></span>${available} / ${total} seats`;
+    chip.style.color = '#1e8c3a';
+    chip.style.background = 'rgba(52,199,89,0.08)';
+    chip.style.borderColor = 'rgba(52,199,89,0.25)';
+  }
 }
 
 function lockForm(label) {
