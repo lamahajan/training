@@ -32,10 +32,11 @@ const CONFIG = {
     'Vegetarian lunch & refreshments',
     'CBSE participation certificate',
   ],
+  REF_PREFIX       : 'LIS-TRG-26',
   TOTAL_SEATS      : 60,   // fallback only — real value always comes from sheet
   SEATS_WARNING_AT : 10,
   // ↓ Only this is needed — Apps Script deployed URL (safe to expose)
-  SHEET_URL        : 'https://script.google.com/macros/s/AKfycbzw_YfZ1VUD5AYBYLjjTBZ6CUzLxxjU5_1lspNKZaMjBt9oYhh-g9LevSKt2k6B4hYaWA/exec',
+  SHEET_URL        : 'https://script.google.com/macros/s/AKfycbwclp9BsSPq-lZ6QvFX1zjTnbm0Mlz6kBfnMUiGnqPYmcr5tX90b0VP4zxyHv-tfqalOA/exec',
 };
 
 // Populated at runtime from Apps Script /config endpoint
@@ -891,7 +892,8 @@ function clearErr() { document.getElementById('errMsg').classList.remove('show')
 function cleanPhone(p) { return String(p).replace(/\D/g,'').slice(-10); }
 
 function genRef() {
-  return SERVER_CONFIG.refPrefix + '-'
+  const prefix = SERVER_CONFIG.refPrefix || CONFIG.REF_PREFIX || 'LIS-TRG-26';
+  return prefix + '-'
        + Date.now().toString(36).toUpperCase().slice(-5)
        + Math.random().toString(36).substring(2,4).toUpperCase();
 }
