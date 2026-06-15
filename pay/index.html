@@ -5,7 +5,7 @@
 // ╬═════════════════════════════════════════════╬
 // ║         CONFIG — sirf yeh block edit karo        ║
 // ╬═════════════════════════════════════════════╬
-var SHEET_URL   = 'https://script.google.com/macros/s/AKfycbzKfX7ZCgydL7pLGtxYA3SMLako5D3mvrN7adGf0Q5OVxD1XlWbtszxgUHhXzm1bax-AA/exec';
+var SHEET_URL   = 'https://script.google.com/macros/s/AKfycbz6F92kniXCODmi3hrnhEVa60FmnEG5Y0BWMlmROEks/dev';
 var UPI_ID      = 'lisdnn@icici';       // overridden by Apps Script config
 var SCHOOL_NAME = 'LOTUS INTERNATIONAL SCHOOL';
 var SCHOOL_SUB  = 'ALIKHAN DINANAGAR';
@@ -31,10 +31,19 @@ var WA_NUMBER   = '919872760880';
     am  = pathMatch[2].trim();
   } else {
     var p = new URLSearchParams(window.location.search);
-    adm   = (p.get("adm")   ||"").trim();
-    am    = (p.get("am")    ||"").trim();
-    name  = (p.get("name")  ||"").trim();
-    cls   = (p.get("class") ||"").trim();
+    // Support new Meta template format: ?LIS-TRG-26-XXXX&INR=750
+    // ref comes as a bare key (no value), INR has the amount
+    var admVal = (p.get('adm') || '').trim();
+    var inrVal = (p.get('INR') || p.get('am') || '').trim();
+    if(!admVal){
+      p.forEach(function(val, key){
+        if(val === '' && key !== 'INR') admVal = key;
+      });
+    }
+    adm   = admVal;
+    am    = inrVal;
+    name  = (p.get('name')  || '').trim();
+    cls   = (p.get('class') || '').trim();
   }
 
   if(!adm || !am || isNaN(parseFloat(am))){
