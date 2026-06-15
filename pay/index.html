@@ -49,6 +49,7 @@ var WA_NUMBER   = '919872760880';
   if(!adm || !am || isNaN(parseFloat(am))){
     showState('error'); return;
   }
+  showState('loading');
 
   var amtFormatted = '₹' + parseFloat(am).toLocaleString('en-IN');
 
@@ -187,7 +188,7 @@ var WA_NUMBER   = '919872760880';
 })();
 
 function showState(state){
-  ['redirecting','success','error'].forEach(function(s){
+  ['loading','redirecting','success','error'].forEach(function(s){
     var el = document.getElementById('state-'+s);
     if(!el) return;
     if(s === state){
@@ -202,7 +203,7 @@ function showState(state){
 </script>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
-<title>Fee Payment — CBSE Training 2025</title>
+<title>Fee Payment — CBSE Teacher Training 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
 /* ── Dynamic vh fix: JS sets --dvh, fallback to 1vh ── */
@@ -350,6 +351,11 @@ body{
 .prog-wrap{height:2px;background:#e8e8ed;border-radius:2px;overflow:hidden;margin-bottom: clamp(10px,2vh,16px);}
 .prog-bar{height:100%;background:#0071e3;border-radius:2px;width:0;transition:width .8s linear;}
 
+#state-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;position:absolute;inset:0;}
+#state-loading.active{display:flex;}
+.loader-spinner{width:36px;height:36px;border:3px solid rgba(0,113,227,0.15);border-top-color:#0071e3;border-radius:50%;animation:spin 0.8s linear infinite;margin-bottom:14px;}
+.loader-txt{font-size:12px;color:#aeaeb2;font-weight:500;letter-spacing:0.02em;}
+@keyframes spin{to{transform:rotate(360deg);}}
 #state-redirecting{display:none;}
 #state-redirecting.active{display:flex;flex-direction:column;flex:1;position:relative;min-height:0;}
 .btn-wrap{position:absolute;bottom:15px;left:0;right:0;}
@@ -498,13 +504,13 @@ body{
       <img src="https://raw.githubusercontent.com/lamahajan/UPI-Redirect/main/Logo.png" alt="Lotus International School" style="width:62px;height:62px;object-fit:contain;"/>
 
       <div class="hero-school-text">
-        <div class="hero-school-wordmark" id="schoolName"></div>
-        <div class="hero-school-sub" id="schoolSub"></div>
+        <div class="hero-school-wordmark" id="schoolName">LOTUS INTERNATIONAL SCHOOL</div>
+        <div class="hero-school-sub" id="schoolSub">ALIKHAN DINANAGAR</div>
       </div>
     </div>
     <div class="hero-divider"></div>
     <div class="hero-eyebrow"><span class="eyebrow-dot"></span>Secure Payment</div>
-    <div class="hero-title" id="heroTitle"></div>
+    <div class="hero-title" id="heroTitle">CBSE Teacher Training 2026</div>
   </div>
 
   <div class="body">
@@ -525,6 +531,10 @@ body{
       </div>
     </div>
 
+    <div id="state-loading">
+      <div class="loader-spinner"></div>
+      <div class="loader-txt">Loading...</div>
+    </div>
     <div id="state-redirecting">
       <div class="prog-wrap"><div class="prog-bar" id="prog-bar"></div></div>
       <div class="upi-row">
