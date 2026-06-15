@@ -75,6 +75,7 @@ var WA_NUMBER   = '919872760880';
 
     if(status === 'Confirmed'){
       // Already paid — show success directly
+      document.getElementById('info-box').style.display = 'none';
       showState('success');
       return;
     }
@@ -161,6 +162,7 @@ var WA_NUMBER   = '919872760880';
     if(_confirmed) return;
     _confirmed = true;
     clearInterval(_pollTimer);
+    document.getElementById('info-box').style.display = 'none';
     showState('success');
   }
 
@@ -170,7 +172,7 @@ var WA_NUMBER   = '919872760880';
 (function(){
   document.getElementById('schoolName').textContent  = SCHOOL_NAME;
   document.getElementById('schoolSub').textContent   = SCHOOL_SUB;
-  document.getElementById('heroTitle').textContent   = PROGRAMME;
+  // heroTitle is static 'Payment' — don't overwrite
   document.title = 'Payment — ' + PROGRAMME;
   // Phone links
   var phoneHref = 'tel:' + PHONE;
@@ -451,7 +453,7 @@ body{
 
 /* ── Success state ── */
 #state-success{display:none;}
-#state-success.active{display:flex;flex-direction:column;align-items:center;position:absolute;inset:0;padding:clamp(18px,3.5vh,26px) 20px 30px;}
+#state-success.active{display:flex;flex-direction:column;align-items:center;position:absolute;inset:0;padding:clamp(18px,3.5vh,26px) 20px clamp(20px,4vh,32px);overflow-y:auto;}
 .suc-badge{
   display:inline-flex;align-items:center;gap:5px;
   background:rgba(52,199,89,.1);border:1px solid rgba(52,199,89,.2);
@@ -492,6 +494,7 @@ body{
   font-size:clamp(13px,3.3vw,15px);font-weight:600;border-radius:13px;
   padding:clamp(11px,2.5vh,14px);text-decoration:none;border:none;width:100%;
   box-shadow:0 4px 14px rgba(52,199,89,.3);transition:all .15s;cursor:pointer;
+  margin-top:auto;flex-shrink:0;
 }
 .suc-cta:active{transform:scale(.985);}
 </style>
@@ -510,7 +513,7 @@ body{
     </div>
     <div class="hero-divider"></div>
     <div class="hero-eyebrow"><span class="eyebrow-dot"></span>Secure Payment</div>
-    <div class="hero-title" id="heroTitle">CBSE Teacher Training 2026</div>
+    <div class="hero-title" id="heroTitle">Payment</div>
   </div>
 
   <div class="body">
@@ -560,7 +563,7 @@ body{
       <div class="suc-badge">✓ Payment Confirmed</div>
       <div class="suc-icon-wrap">✅</div>
       <div class="suc-msg">Payment Successful!</div>
-      <div class="suc-sub">Your payment has been received and confirmed by the school.</div>
+      <div class="suc-sub">Your fee payment has been received and confirmed by the school.</div>
       <div class="suc-amount-card">
         <div>
           <div class="suc-amount-label">Amount Paid</div>
@@ -573,7 +576,7 @@ body{
       </div>
       <div class="suc-divider"></div>
       <div class="suc-actions">
-        <button class="suc-cta" onclick="window.close()">Done</button>
+
       </div>
     </div>
 
