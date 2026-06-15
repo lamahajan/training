@@ -32,8 +32,8 @@ const CONFIG = {
     'Vegetarian lunch & refreshments',
     'CBSE participation certificate',
   ],
-  TOTAL_SEATS      : 5,
-  SEATS_WARNING_AT : 3,
+  TOTAL_SEATS      : 60,   // fallback only — real value always comes from sheet
+  SEATS_WARNING_AT : 10,
   // ↓ Only this is needed — Apps Script deployed URL (safe to expose)
   SHEET_URL        : 'https://script.google.com/macros/s/AKfycbzw_YfZ1VUD5AYBYLjjTBZ6CUzLxxjU5_1lspNKZaMjBt9oYhh-g9LevSKt2k6B4hYaWA/exec',
 };
@@ -510,7 +510,7 @@ footer {
   </div>
   <div style="display:flex;align-items:center;gap:10px;">
     <div class="nav-pill" id="navBadge"></div>
-    <div id="navSeatChip" style="display:none;align-items:center;gap:6px;font-size:11px;font-weight:600;letter-spacing:0.01em;border-radius:999px;padding:5px 12px;border:0.5px solid;white-space:nowrap;"></div>
+    <div id="navSeatChip" style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;letter-spacing:0.01em;border-radius:999px;padding:5px 12px;border:0.5px solid rgba(0,0,0,0.1);white-space:nowrap;color:#aeaeb2;background:rgba(0,0,0,0.03);">· · ·</div>
   </div>
 </nav>
 
@@ -805,7 +805,6 @@ function renderSeatBar(banner, available, total) {
 function updateNavSeatChip(available, total) {
   const chip = document.getElementById('navSeatChip');
   if (!chip) return;
-  chip.style.display = 'flex';
 
   if (available <= 0) {
     chip.textContent = 'Full';
