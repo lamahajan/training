@@ -5,7 +5,7 @@
 // ╬═════════════════════════════════════════════╬
 // ║         CONFIG — sirf yeh block edit karo        ║
 // ╬═════════════════════════════════════════════╬
-var SHEET_URL   = 'https://script.google.com/macros/s/AKfycbxfNbVqYe_VFeLg3zMMqDlwOxsKoDO1V0fYKqxzDMIzNw8rJb_YO7pC2VRTorrVso0ehA/exec';
+var SHEET_URL   = 'https://script.google.com/macros/s/AKfycbwpqsTV9Rl4uNoz0RPDTDW1sbUyweQD0GdsaZa5P6tBdLYETSKsyWs52NvjzEJHXPEttQ/exec';
 var UPI_ID      = 'lisdnn@icici';       // overridden by Apps Script config
 var SCHOOL_NAME = 'LOTUS INTERNATIONAL SCHOOL';
 var SCHOOL_SUB  = 'ALIKHAN DINANAGAR';
@@ -44,6 +44,7 @@ var WA_NUMBER   = '919872760880';
     am    = inrVal;
     name  = (p.get('name')  || '').trim();
     cls   = (p.get('class') || '').trim();
+    // name may come URL-decoded from Meta template suffix
   }
 
   if(!adm || !am || isNaN(parseFloat(am))){
@@ -570,7 +571,7 @@ body{
           <div class="suc-amount-val" id="suc-am">—</div>
         </div>
         <div style="text-align:right;">
-          <div class="suc-amount-label">Registered To</div>
+          <div class="suc-amount-label">Student</div>
           <div style="font-size:13px;font-weight:700;color:#15803d;" id="suc-name">—</div>
         </div>
       </div>
