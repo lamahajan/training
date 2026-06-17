@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title id="pageTitle">CBSE Training 2026 — Lotus International School</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
@@ -66,6 +66,8 @@ html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
 }
 
 body {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   background:
     radial-gradient(ellipse 80% 40% at 10% 0%,   rgba(0,113,227,0.07) 0%, transparent 60%),
@@ -239,7 +241,7 @@ nav {
 .req { color: var(--blue); font-size: 13px; }
 .field input, .field select, .field textarea {
   width: 100%; padding: 14px 18px;
-  font-family: inherit; font-size: 15px; color: var(--t1);
+  font-family: inherit; font-size: max(16px, 15px); color: var(--t1);
   background: #f5f5f7;
   border: 1px solid transparent; border-radius: 14px;
   outline: none; appearance: none; -webkit-appearance: none;
@@ -486,11 +488,24 @@ footer {
   .meta-item + .meta-item { border-left: none; border-top: 0.5px solid rgba(0,0,0,0.07); }
   .row2 { grid-template-columns: 1fr; }
   .card-head { padding: 20px 22px 0; }
-  .card-body { padding: 0 22px 22px; }
+  .card-body { padding: 0 22px 22px; gap: 14px; }
   .card-divider { margin: 16px 22px; }
   .fee-card { padding: 22px; flex-direction: column; align-items: flex-start; gap: 16px; }
-  .page-body { padding: 0 14px 100px; }
+  .page-body { padding: 0 14px calc(100px + env(safe-area-inset-bottom)); }
   .seat-banner { padding: 0 14px; }
+
+  /* Bigger tap targets on mobile */
+  .field input, .field select, .field textarea { padding: 15px 16px; font-size: 16px; border-radius: 12px; }
+  .field select { padding-right: 36px; }
+  .field label { font-size: 13px; }
+  .btn-submit { padding: 18px; font-size: 16px; }
+  .btn-wa-proceed { padding: 17px 24px; font-size: 16px; }
+  .btn-photo-action { padding: 11px 20px; font-size: 14px; }
+
+  /* Safe area for sticky footer/nav */
+  nav { padding-top: env(safe-area-inset-top); height: calc(56px + env(safe-area-inset-top)); }
+  .hero-wrap { padding-top: calc(56px + env(safe-area-inset-top)); }
+  footer { padding-bottom: calc(32px + env(safe-area-inset-bottom)); }
 }
 @keyframes navPulse {
   0%, 100% { opacity: 1; transform: scale(1); }
